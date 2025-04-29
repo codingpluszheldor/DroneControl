@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DroneAirSimClient.hpp" />
+    <ClInclude Include="DroneApplication.hpp" />
     <ClInclude Include="DroneRpc.hpp" />
     <ClInclude Include="SafeMessageQueue.hpp" />
   </ItemGroup>

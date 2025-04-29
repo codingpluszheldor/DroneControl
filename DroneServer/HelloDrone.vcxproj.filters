@@ -29,5 +29,8 @@
     <ClInclude Include="DroneRpc.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DroneApplication.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

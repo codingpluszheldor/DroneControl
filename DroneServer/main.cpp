@@ -17,26 +17,21 @@ STRICT_MODE_ON
 #include <compat/nanomsg/nn.h>
 #include <compat/nanomsg/reqrep.h>
 
-#include "DroneAirSimClient.hpp"
-#include "DroneRpc.hpp"
+#include "DroneApplication.hpp"
 
 int main()
 {
-    // Сокет nanomsg
-    int server_sock = nn_socket(AF_SP, NN_REP);
-    if (server_sock < 0) {
-        std::cerr << "Ошибка инициализации socket\n";
-        return 1;
+    drone::DroneApplication app;
+    const std::string endpoint = "tcp : //127.0.0.1:20001";
+    if (app.initRpcControllServer(endpoint)) {
+        return -1;
     }
 
-    const char* endpoint = "tcp://127.0.0.1:20001"; // Адрес для подключения клиентов
-    if (nn_bind(server_sock, endpoint) < 0) {
-        std::cerr << "Ошибка привязки адреса\n";
-        nn_close(server_sock);
-        return 1;
-    }
+    return app.run();
 
-    using namespace msr::airlib;
+
+    //using namespace msr::airlib;
+    //using namespace drone;
 
     //msr::airlib::MultirotorRpcLibClient client;
     //typedef ImageCaptureBase::ImageRequest ImageRequest;
@@ -44,31 +39,8 @@ int main()
     //typedef ImageCaptureBase::ImageType ImageType;
     //typedef common_utils::FileSystem FileSystem;
 
-    DroneAirSimClient client;
-
-    try {
-        std::this_thread::sleep_for(std::chrono::duration<double>(5.0));
-        client.connection();
-        client.armDisarm();
-        std::this_thread::sleep_for(std::chrono::duration<double>(5.0));
-        client.takeoff();
-
-        std::this_thread::sleep_for(std::chrono::duration<double>(5.0));
-        BarometerBase::Output barometer_data = std::move(client.barometerData());
-        std::cout << "Barometer data \n"
-                    << "barometer_data.time_stamp \t" << barometer_data.time_stamp << std::endl
-                    << "barometer_data.altitude \t" << barometer_data.altitude << std::endl
-                    << "barometer_data.pressure \t" << barometer_data.pressure << std::endl
-                    << "barometer_data.qnh \t" << barometer_data.qnh << std::endl;
-        BarometerSensorData bar_sensor;
-
-        client.testFlyBox();
-        std::this_thread::sleep_for(std::chrono::duration<double>(5.0));
-        client.landing();
-        std::this_thread::sleep_for(std::chrono::duration<double>(5.0));
-        client.armDisarm(false);
-
-
+    //try {
+        
 
         //client.confirmConnection();
 
@@ -255,12 +227,12 @@ int main()
         //std::cout << "Press Enter to disarm" << std::endl;
         //std::cin.get();
         //client.armDisarm(false);
-    }
-    catch (rpc::rpc_error& e) {
-        const auto msg = e.get_error().as<std::string>();
-        std::cout << "Exception raised by the API, something went wrong." << std::endl
-                  << msg << std::endl;
-    }
+    //}
+    //catch (rpc::rpc_error& e) {
+    //    const auto msg = e.get_error().as<std::string>();
+    //    std::cout << "Exception raised by the API, something went wrong." << std::endl
+    //              << msg << std::endl;
+    //}
 
-    return 0;
+    //return 0;
 }

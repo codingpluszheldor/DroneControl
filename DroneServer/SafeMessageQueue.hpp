@@ -8,31 +8,35 @@
 #include <queue>
 #include <string>
 
+namespace drone
+{
 /// <summary>
 /// Поточно-безопасная очередь сообщений
 /// </summary>
+template <typename MessageType>
 class SafeMessageQueue
 {
 private:
     std::mutex _mtx;
     std::condition_variable _cond_var;
-    std::queue<std::string> _messages;
+    std::queue<MessageType> _messages;
 
 public:
     /// <summary>
     /// Добавление сообщения в очередь
     /// </summary>
-    void push(const std::string& message)
+    template <typename T>
+    void push(T&& message)
     {
         std::lock_guard<std::mutex> lock(_mtx);
-        _messages.push(message);
+        _messages.emplace(std::forward<T>(message));
         _cond_var.notify_one();
     }
 
     /// <summary>
     /// Удаление сообщения из очереди
     /// </summary>
-    std::string pop()
+    MessageType pop()
     {
         std::unique_lock<std::mutex> lock(_mtx);
         _cond_var.wait(lock, [this]() { return !_messages.empty(); });
@@ -41,5 +45,6 @@ public:
         return result;
     }
 };
+}
 
 #endif

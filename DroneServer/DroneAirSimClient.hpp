@@ -21,6 +21,8 @@ typedef ImageCaptureBase::ImageResponse ImageResponse;
 typedef ImageCaptureBase::ImageType ImageType;
 typedef common_utils::FileSystem FileSystem;
 
+namespace drone
+{
 /// <summary>
 /// Поточно-безопасная очередь сообщений
 /// </summary>
@@ -28,12 +30,12 @@ class DroneAirSimClient
 {
 private:
     MultirotorRpcLibClient _client;
-    
+
 public:
     /// <summary>
     /// Соединение с симулятором
     /// </summary>
-    void connection() 
+    void connection()
     {
         _client.confirmConnection();
         _client.enableApiControl(true);
@@ -43,7 +45,7 @@ public:
     /// Включение/выключение дрона
     /// </summary>
     void armDisarm(bool arm = true)
-    {        
+    {
         _client.armDisarm(arm);
     }
 
@@ -127,7 +129,7 @@ public:
 
         _client.hoverAsync()->waitOnLastTask();
     }
-
 };
+}
 
 #endif

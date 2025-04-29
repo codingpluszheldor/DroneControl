@@ -4,6 +4,9 @@
 #include <cinttypes>
 #include <cmath>
 
+
+namespace drone
+{
 /// <summary>
 /// Сенсоры на борту дрона
 /// </summary>
@@ -52,6 +55,6 @@ struct BarometerSensorDataRep
     std::float_t pressure; //Pascal
     std::float_t qnh;
 };
-
+}
 
 #endif
