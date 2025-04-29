@@ -23,7 +23,7 @@ int main()
 {
     drone::DroneApplication app;
     const std::string endpoint = "tcp : //127.0.0.1:20001";
-    if (app.initRpcControllServer(endpoint)) {
+    if (app.initRpcControllServer(endpoint) < 0) {
         return -1;
     }
 

@@ -8,7 +8,7 @@
 namespace drone
 {
 /// <summary>
-/// Сенсоры на борту дрона
+/// РЎРµРЅСЃРѕСЂС‹ РЅР° Р±РѕСЂС‚Сѓ РґСЂРѕРЅР°
 /// </summary>
 enum class DroneSensors
 {
@@ -19,7 +19,7 @@ enum class DroneSensors
 };
 
 /// <summary>
-/// Список комманд для упарвления и получения телеметрии
+/// РЎРїРёСЃРѕРє РєРѕРјРјР°РЅРґ РґР»СЏ СѓРїР°СЂРІР»РµРЅРёСЏ Рё РїРѕР»СѓС‡РµРЅРёСЏ С‚РµР»РµРјРµС‚СЂРёРё
 /// </summary>
 enum class DroneMethods
 {
@@ -36,25 +36,40 @@ enum class DroneMethods
 };
 
 /// <summary>
-/// Запрос на выполнение команды
+/// Р—Р°РїСЂРѕСЃ РЅР° РІС‹РїРѕР»РЅРµРЅРёРµ РєРѕРјР°РЅРґС‹
 /// </summary>
+#pragma pack(push, 1)
 struct DroneMethodReq
 {
     DroneMethods method;
     std::uint64_t time_point;
 };
+#pragma pack(pop)
 
 /// <summary>
-/// Структура ответа от сенсора давления
+/// РЎС‚СЂСѓРєС‚СѓСЂР° РѕС‚РІРµС‚Р° РѕС‚ СЃРµРЅСЃРѕСЂР° РґР°РІР»РµРЅРёСЏ
 /// </summary>
+#pragma pack(push, 1)
 struct BarometerSensorDataRep
 {
-    DroneSensors sensor;
     std::uint64_t time_point;
     std::float_t altitude; //meters
     std::float_t pressure; //Pascal
     std::float_t qnh;
 };
+#pragma pack(pop)
+
+/// <summary>
+/// РЎС‚СЂСѓРєС‚СѓСЂР° РѕР±С‰РµРіРѕ РѕС‚РІРµС‚Р°
+/// </summary>
+#pragma pack(push, 1)
+struct DroneReply
+{
+    DroneMethods method;
+    BarometerSensorDataRep barometer;
+};
+#pragma pack(pop)
+
 }
 
 #endif
