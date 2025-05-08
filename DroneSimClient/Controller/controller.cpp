@@ -6,6 +6,9 @@
 Controller::Controller(QObject *parent)
     : QObject(parent)
 {
+    _timer = QSharedPointer<QTimer>(new QTimer(this));
+    connect(_timer.data(), &QTimer::timeout, this, &Controller::slotTimeOut);
+    _timer->start(50);
 }
 
 Controller::~Controller()
@@ -38,18 +41,21 @@ bool Controller::sendRequest(drone::DroneMethodReq *request)
 {
     int sendResult = nn_send(_clientSock, request, sizeof(drone::DroneMethodReq), 0);
     if (sendResult < 0) {
-        _errorText = "Ошибка отправки сообщения";
+        _errorText = QString("[%1] Ошибка отправки команды").arg(_methodNames.value(request->method));
+        qDebug() << _errorText;
         return false;
     } else {
-        _replyText = "Сообщение успешно отправлено!";
+        _requestText = QString("--> [%1] Команда отправлена").arg(_methodNames.value(request->method));
+         emit signalSendRequest(false, _requestText);
 
         // Ожидание ответа от сервера
         char buffer[drone::MSG_BUFFER_SIZE];
         int recvResult = nn_recv(_clientSock, buffer, sizeof(buffer), 0);
         if (recvResult > 0){
-            _replyText = "Полученный ответ от сервера";
+            _replyText = QString("<-- [%1] Получен ответ от сервера").arg(_methodNames.value(request->method));
         } else {
-            _errorText = "Ошибка приема ответа";
+            _errorText = QString("[%1] Ошибка приема ответа").arg(_methodNames.value(request->method));
+            qDebug() << _errorText;
             return false;
         }
     }
@@ -57,12 +63,31 @@ bool Controller::sendRequest(drone::DroneMethodReq *request)
     return true;
 }
 
-void Controller::slotConnect()
+void Controller::makeRequest(const drone::DroneMethods &method)
 {
     drone::DroneMethodReq *request = new drone::DroneMethodReq;
-    request->method = drone::DroneMethods::Connection;
-    request->time_point = QDateTime::currentDateTimeUtc().toSecsSinceEpoch();
+    request->method = method;
+    request->speed = _speed;
+    request->yaw_is_rate = _yaw_is_rate;
+    request->yaw_or_rate = _yaw_or_rate;
+    request->drivetrain = _drivetrain;
+    request->time_point = QDateTime::currentSecsSinceEpoch();
 
+    if (_lastCmd != method) {
+        while (!_cmqQueue.isEmpty()) {
+            delete _cmqQueue.dequeue();
+        }
+        _cmqQueue.append(request);
+    }
+}
+
+void Controller::slotTimeOut()
+{
+    if (_cmqQueue.isEmpty()) {
+        return;
+    }
+
+     drone::DroneMethodReq *request = _cmqQueue.dequeue();
     if (sendRequest(request)) {
         emit signalSendRequest(false, _replyText);
     } else {
@@ -70,4 +95,101 @@ void Controller::slotConnect()
     }
 
     delete request;
+}
+
+void Controller::slotConnect()
+{    
+    makeRequest(drone::DroneMethods::Connection);
+}
+
+void Controller::slotArm()
+{
+    makeRequest(drone::DroneMethods::Arm);
+}
+
+void Controller::slotDisarm()
+{
+    makeRequest(drone::DroneMethods::Disarm);
+}
+
+void Controller::slotTakeoff()
+{
+    makeRequest(drone::DroneMethods::Takeoff);
+}
+
+void Controller::slotLanding()
+{
+    makeRequest(drone::DroneMethods::Landing);
+}
+
+void Controller::slotTestBox()
+{
+    makeRequest(drone::DroneMethods::TestFlyBox);
+}
+
+void Controller::slotToUpFly()
+{
+    makeRequest(drone::DroneMethods::ToUp);
+}
+
+void Controller::slotToDownFly()
+{
+    makeRequest(drone::DroneMethods::ToDown);
+}
+
+void Controller::slotToForwardFly()
+{
+    makeRequest(drone::DroneMethods::ToForward);
+}
+
+void Controller::slotToBackFly()
+{
+    makeRequest(drone::DroneMethods::ToBack);
+}
+
+void Controller::slotToRightFly()
+{
+    makeRequest(drone::DroneMethods::ToRight);
+}
+
+void Controller::slotToLeftFly()
+{
+    makeRequest(drone::DroneMethods::ToLeft);
+}
+
+void Controller::slotKeyPressed(const int &key)
+{
+    switch (key) {
+    case Qt::Key_Up:
+        makeRequest(drone::DroneMethods::ToForward);
+        break;
+    case Qt::Key_Down:
+        makeRequest(drone::DroneMethods::ToBack);
+        break;
+    case Qt::Key_Right:
+        makeRequest(drone::DroneMethods::ToRight);
+        break;
+    case Qt::Key_Left:
+        makeRequest(drone::DroneMethods::ToLeft);
+        break;
+    case Qt::Key_PageUp:
+        makeRequest(drone::DroneMethods::ToUp);
+        break;
+    case Qt::Key_PageDown:
+        makeRequest(drone::DroneMethods::ToDown);
+        break;
+    default:
+        break;
+    }
+}
+
+void Controller::slotSetParams(const bool &yaw_is_rate,
+                               const float &yaw_or_rate,
+                               const float &speed,
+                               const int &drivetrain)
+{
+    _yaw_is_rate = yaw_is_rate;
+    _yaw_or_rate = yaw_or_rate;
+    _speed = speed;
+    _drivetrain = drivetrain;
 }

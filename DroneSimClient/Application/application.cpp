@@ -40,5 +40,5 @@ int Application::run()
     controller->moveToThread(thread);
     thread->start();
 
-	return exec();
+    return exec();
 }
