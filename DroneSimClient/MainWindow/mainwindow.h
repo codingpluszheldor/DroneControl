@@ -31,6 +31,16 @@ public slots:
     /// <param name="text">Строка лога</param>
     void slotAddLogText(const bool &isError, const QString &text);
 
+    /// <summary>
+    /// Отображение данных барометра
+    /// </summary>
+    void slotBarometerSensorData(const BarometerSensorDataRep &data);
+
+    /// <summary>
+    /// Отображение данных ИНС
+    /// </summary>
+    void slotImuSensorData(const ImuSensorDataRep &data);
+
 private slots:
     /// <summary>
     /// Обновление параметров в контроллере
@@ -44,6 +54,12 @@ protected:
     void keyPressEvent(QKeyEvent* event) override;
 
 signals:
+    /// <summary>
+    /// Обработка нажатий кнопок на форме
+    /// </summary>
+    /// <param name="cmd">Команда по нажатой кнопке</param>
+    void signalBtnCmd(const int &cmd);
+
     /// <summary>
     /// Обработка нажатий клавишь
     /// </summary>

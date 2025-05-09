@@ -3,9 +3,14 @@
 #include <compat/nanomsg/reqrep.h>
 #include "controller.h"
 
+
 Controller::Controller(QObject *parent)
     : QObject(parent)
 {
+    using namespace drone;
+    qRegisterMetaType<BarometerSensorDataRep>("BarometerSensorDataRep");
+    qRegisterMetaType<ImuSensorDataRep>("ImuSensorDataRep");
+
     _timer = QSharedPointer<QTimer>(new QTimer(this));
     connect(_timer.data(), &QTimer::timeout, this, &Controller::slotTimeOut);
     _timer->start(50);
@@ -49,10 +54,13 @@ bool Controller::sendRequest(drone::DroneMethodReq *request)
          emit signalSendRequest(false, _requestText);
 
         // Ожидание ответа от сервера
-        char buffer[drone::MSG_BUFFER_SIZE];
+        char buffer[drone::MSG_BUFFER_SIZE] = { 0 };
         int recvResult = nn_recv(_clientSock, buffer, sizeof(buffer), 0);
-        if (recvResult > 0){
-            _replyText = QString("<-- [%1] Получен ответ от сервера").arg(_methodNames.value(request->method));
+        drone::DroneReply *reply = reinterpret_cast<drone::DroneReply*>(buffer);
+        if (recvResult > 0 && reply != nullptr) {
+            _replyText = QString("<-- [%1] Получен ответ от сервера").arg(_methodNames.value(reply->method));
+            emit signalBarometerSensorData(reply->barometer);
+            emit signalImuSensorData(reply->imu);
         } else {
             _errorText = QString("[%1] Ошибка приема ответа").arg(_methodNames.value(request->method));
             qDebug() << _errorText;
@@ -97,65 +105,12 @@ void Controller::slotTimeOut()
     delete request;
 }
 
-void Controller::slotConnect()
-{    
-    makeRequest(drone::DroneMethods::Connection);
+void Controller::slotBtnCmd(const int &cmd)
+{
+    drone::DroneMethods method = static_cast<drone::DroneMethods>(cmd);
+    makeRequest(method);
 }
 
-void Controller::slotArm()
-{
-    makeRequest(drone::DroneMethods::Arm);
-}
-
-void Controller::slotDisarm()
-{
-    makeRequest(drone::DroneMethods::Disarm);
-}
-
-void Controller::slotTakeoff()
-{
-    makeRequest(drone::DroneMethods::Takeoff);
-}
-
-void Controller::slotLanding()
-{
-    makeRequest(drone::DroneMethods::Landing);
-}
-
-void Controller::slotTestBox()
-{
-    makeRequest(drone::DroneMethods::TestFlyBox);
-}
-
-void Controller::slotToUpFly()
-{
-    makeRequest(drone::DroneMethods::ToUp);
-}
-
-void Controller::slotToDownFly()
-{
-    makeRequest(drone::DroneMethods::ToDown);
-}
-
-void Controller::slotToForwardFly()
-{
-    makeRequest(drone::DroneMethods::ToForward);
-}
-
-void Controller::slotToBackFly()
-{
-    makeRequest(drone::DroneMethods::ToBack);
-}
-
-void Controller::slotToRightFly()
-{
-    makeRequest(drone::DroneMethods::ToRight);
-}
-
-void Controller::slotToLeftFly()
-{
-    makeRequest(drone::DroneMethods::ToLeft);
-}
 
 void Controller::slotKeyPressed(const int &key)
 {
@@ -177,6 +132,12 @@ void Controller::slotKeyPressed(const int &key)
         break;
     case Qt::Key_PageDown:
         makeRequest(drone::DroneMethods::ToDown);
+        break;
+    case Qt::Key_Insert:
+        makeRequest(drone::DroneMethods::RotateLeft);
+        break;
+    case Qt::Key_Delete:
+        makeRequest(drone::DroneMethods::RotateRight);
         break;
     default:
         break;

@@ -177,6 +177,16 @@ public:
                 makeResponseControl(DroneMethods::ToBack);
                 break;
             }
+            case DroneMethods::RotateLeft: {
+                _client.rotateByYaw();
+                makeResponseControl(DroneMethods::RotateLeft);
+                break;
+            }
+            case DroneMethods::RotateRight: {
+                _client.rotateByYaw(false);
+                makeResponseControl(DroneMethods::RotateRight);
+                break;
+            }
             }
         }
         catch (rpc::rpc_error& e) {
@@ -210,6 +220,7 @@ public:
                 }
                 
                 if (_response.empty()) {
+                    std::cerr << "Пустой ответ...\n";
                     continue;
                 }
                 // Ответ
@@ -236,6 +247,29 @@ private:
     {
         DroneReply* reply = new DroneReply;
         reply->method = method;
+
+        if (method != DroneMethods::Connection) {
+            BarometerBase::Output barometer_data = std::move(_client.barometerData());
+            reply->barometer = {
+                barometer_data.time_stamp,
+                barometer_data.altitude,
+                barometer_data.pressure,
+                barometer_data.qnh
+            };
+
+            ImuBase::Output imu_data = std::move(_client.imuData());
+            std::stringstream ss_vel{ std::stringstream() << imu_data.angular_velocity };
+            std::stringstream ss_accel{ std::stringstream() << imu_data.linear_acceleration };
+            ImuSensorDataRep imu;
+            ss_vel >> imu.angular_velocity_x;
+            ss_vel >> imu.angular_velocity_y;
+            ss_vel >> imu.angular_velocity_z;
+            ss_accel >> imu.linear_acceleration_x;
+            ss_accel >> imu.linear_acceleration_y;
+            ss_accel >> imu.linear_acceleration_z;
+            reply->imu = imu;
+        }
+        
         _response = std::vector<std::byte>(reinterpret_cast<const std::byte*>(reply),
                                            reinterpret_cast<const std::byte*>(reply + sizeof(DroneReply)));
         delete reply;

@@ -7,6 +7,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     setupUi(this);
 
+    twBarometer->resizeColumnsToContents();
+    twAngularVel->resizeColumnsToContents();
+    twLinearAccel->resizeColumnsToContents();
+
     // Параметры по умолчанию
     sbSpeed->setValue(5.0);
     rbYaw->setChecked(true);
@@ -46,6 +50,12 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
     } else if(event->key() == Qt::Key_PageDown){
         qDebug() << "Клавиша 'влево' нажата";
         emit signalKeyPressed(Qt::Key_PageDown);
+    } else if(event->key() == Qt::Key_Insert){
+        qDebug() << "Клавиша 'insert' нажата";
+        emit signalKeyPressed(Qt::Key_Insert);
+    } else if(event->key() == Qt::Key_Delete){
+        qDebug() << "Клавиша 'delete' нажата";
+        emit signalKeyPressed(Qt::Key_Delete);
     }
 }
 
@@ -59,7 +69,6 @@ void MainWindow::slotTimeOut()
 
 void MainWindow::setController(Controller *controller)
 {
-//    _controller = controller;
     if (controller == nullptr) {
         return;
     }
@@ -67,33 +76,55 @@ void MainWindow::setController(Controller *controller)
     // Соединение UI с контролером
     connect(controller, &Controller::signalSendRequest,
             this, &MainWindow::slotAddLogText, Qt::QueuedConnection);
-    connect(pBtnConnect, &QPushButton::clicked,
-            controller, &Controller::slotConnect, Qt::QueuedConnection);
+    connect(this, &MainWindow::signalBtnCmd,
+            controller, &Controller::slotBtnCmd, Qt::QueuedConnection);
+    connect(pBtnConnect, &QPushButton::clicked, this, [this]() {
+        emit signalBtnCmd(static_cast<int>(drone::DroneMethods::Connection));
+    }, Qt::QueuedConnection);
     connect(this, &MainWindow::signalSetParams,
             controller, &Controller::slotSetParams, Qt::QueuedConnection);
     // Проверка дрона
-    connect(pBtnArm, &QPushButton::clicked,
-            controller, &Controller::slotArm, Qt::QueuedConnection);
-    connect(pBtnDisArm, &QPushButton::clicked,
-            controller, &Controller::slotDisarm, Qt::QueuedConnection);
-    connect(pBtnTakeOff, &QPushButton::clicked,
-            controller, &Controller::slotTakeoff, Qt::QueuedConnection);
-    connect(pBtnLanding, &QPushButton::clicked,
-            controller, &Controller::slotLanding, Qt::QueuedConnection);
-    connect(pBtnTestBox, &QPushButton::clicked,
-            controller, &Controller::slotTestBox, Qt::QueuedConnection);
+    connect(pBtnArm, &QPushButton::clicked, this, [this]() {
+        emit signalBtnCmd(static_cast<int>(drone::DroneMethods::Arm));
+    }, Qt::QueuedConnection);
+    connect(pBtnDisArm, &QPushButton::clicked, this, [this]() {
+        emit signalBtnCmd(static_cast<int>(drone::DroneMethods::Disarm));
+    }, Qt::QueuedConnection);
+    connect(pBtnTakeOff, &QPushButton::clicked, this, [this]() {
+        emit signalBtnCmd(static_cast<int>(drone::DroneMethods::Takeoff));
+    }, Qt::QueuedConnection);
+    connect(pBtnLanding, &QPushButton::clicked, this, [this]() {
+        emit signalBtnCmd(static_cast<int>(drone::DroneMethods::Landing));
+    }, Qt::QueuedConnection);
+    connect(pBtnTestBox, &QPushButton::clicked, this, [this]() {
+        emit signalBtnCmd(static_cast<int>(drone::DroneMethods::TestFlyBox));
+    }, Qt::QueuedConnection);
     // Пульт управления
+    connect(pBtnUp, &QPushButton::clicked, this, [this]() {
+        emit signalBtnCmd(static_cast<int>(drone::DroneMethods::ToUp));
+    }, Qt::QueuedConnection);
+    connect(pBtnDown, &QPushButton::clicked, this, [this]() {
+        emit signalBtnCmd(static_cast<int>(drone::DroneMethods::ToDown));
+    }, Qt::QueuedConnection);
+    connect(pBtnForward, &QPushButton::clicked, this, [this]() {
+        emit signalBtnCmd(static_cast<int>(drone::DroneMethods::ToForward));
+    }, Qt::QueuedConnection);
+    connect(pBtnBack, &QPushButton::clicked, this, [this]() {
+        emit signalBtnCmd(static_cast<int>(drone::DroneMethods::ToBack));
+    }, Qt::QueuedConnection);
+    connect(pBtnRight, &QPushButton::clicked, this, [this]() {
+        emit signalBtnCmd(static_cast<int>(drone::DroneMethods::ToRight));
+    }, Qt::QueuedConnection);
+    connect(pBtnLeft, &QPushButton::clicked, this, [this]() {
+        emit signalBtnCmd(static_cast<int>(drone::DroneMethods::ToLeft));
+    }, Qt::QueuedConnection);
     connect(this, &MainWindow::signalKeyPressed,
             controller, &Controller::slotKeyPressed, Qt::QueuedConnection);
-    connect(pBtnUp, &QPushButton::clicked,
-            controller, &Controller::slotToUpFly, Qt::QueuedConnection);
-    connect(pBtnDown, &QPushButton::clicked,
-            controller, &Controller::slotToDownFly, Qt::QueuedConnection);
-    connect(pBtnForward, &QPushButton::clicked,
-            controller, &Controller::slotToForwardFly, Qt::QueuedConnection);
-    connect(pBtnBack, &QPushButton::clicked,
-            controller, &Controller::slotToBackFly, Qt::QueuedConnection);
-
+    // Сенсоры
+    connect(controller, &Controller::signalBarometerSensorData,
+            this, &MainWindow::slotBarometerSensorData, Qt::QueuedConnection);
+    connect(controller, &Controller::signalImuSensorData,
+            this, &MainWindow::slotImuSensorData, Qt::QueuedConnection);
 }
 
 void MainWindow::slotAddLogText(const bool &isError, const QString &text)
@@ -104,3 +135,40 @@ void MainWindow::slotAddLogText(const bool &isError, const QString &text)
     teLog->append(text + QString(" - [%1]").arg(dt.toString("hh:mm:ss.z")));
 }
 
+void MainWindow::slotBarometerSensorData(const drone::BarometerSensorDataRep &data)
+{
+    for (int i = 0; i < 3; i++) {
+        if (twBarometer->item(i, 1) == nullptr) {
+            QTableWidgetItem *item = new QTableWidgetItem();
+            twBarometer->setItem(i, 1, item);
+        }
+    }
+    twBarometer->item(0, 1)->setText(QString::number(data.altitude, 'f', 2));
+    twBarometer->item(1, 1)->setText(QString::number(data.pressure, 'f', 2));
+    twBarometer->item(2, 1)->setText(QString::number(data.qnh, 'f', 2));
+    twBarometer->resizeColumnsToContents();
+}
+
+void  MainWindow::slotImuSensorData(const ImuSensorDataRep &data)
+{
+    for (int i = 0; i < 3; i++) {
+        if (twAngularVel->item(i, 1) == nullptr) {
+            QTableWidgetItem *item = new QTableWidgetItem();
+            twAngularVel->setItem(i, 1, item);
+        }
+        if (twLinearAccel->item(i, 1) == nullptr) {
+            QTableWidgetItem *item = new QTableWidgetItem();
+            twLinearAccel->setItem(i, 1, item);
+        }
+    }
+
+    twAngularVel->item(0, 1)->setText(QString::number(data.angular_velocity_x, 'f', 2));
+    twAngularVel->item(1, 1)->setText(QString::number(data.angular_velocity_y, 'f', 2));
+    twAngularVel->item(2, 1)->setText(QString::number(data.angular_velocity_z, 'f', 2));
+    twAngularVel->resizeColumnsToContents();
+
+    twLinearAccel->item(0, 1)->setText(QString::number(data.linear_acceleration_x, 'f', 2));
+    twLinearAccel->item(1, 1)->setText(QString::number(data.linear_acceleration_y, 'f', 2));
+    twLinearAccel->item(2, 1)->setText(QString::number(data.linear_acceleration_z, 'f', 2));
+    twLinearAccel->resizeColumnsToContents();
+}

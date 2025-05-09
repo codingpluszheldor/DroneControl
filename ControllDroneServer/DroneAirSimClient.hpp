@@ -259,7 +259,23 @@ public:
 
         _client.hoverAsync()->waitOnLastTask();
     }
-};
+
+    /// <summary>
+    /// Поворот
+    /// </summary>
+    void rotateByYaw(bool left = true)
+    {
+        _client.enableApiControl(true);
+        const float duration = 1.0f;
+        const float yaw_rate = left ? 30.0f : -30.0f;
+
+        _client.rotateByYawRateAsync(yaw_rate, duration);
+        std::this_thread::sleep_for(std::chrono::duration<double>(duration));
+
+        _client.hoverAsync()->waitOnLastTask();
+    }
+
+    };
 }
 
 #endif

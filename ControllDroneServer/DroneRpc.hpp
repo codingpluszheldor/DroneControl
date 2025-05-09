@@ -45,7 +45,9 @@ enum class DroneMethods
     ToLeft,
     ToRight,
     ToForward,
-    ToBack
+    ToBack,
+    RotateLeft,
+    RotateRight
 };
 
 /// <summary>
@@ -69,10 +71,26 @@ struct DroneMethodReq
 #pragma pack(push, 1)
 struct BarometerSensorDataRep
 {
-    std::uint64_t time_point;
-    std::float_t altitude; //meters
-    std::float_t pressure; //Pascal
-    std::float_t qnh;
+    std::uint64_t time_point = 0;
+    std::float_t altitude = 0.0f; //meters
+    std::float_t pressure = 0.0f; //Pascal
+    std::float_t qnh = 0.0f;
+};
+#pragma pack(pop)
+
+/// <summary>
+/// Структура ответа от ИНС
+/// </summary>
+#pragma pack(push, 1)
+struct ImuSensorDataRep
+{
+    std::uint64_t time_point = 0;
+    std::float_t angular_velocity_x = 0.0f;
+    std::float_t angular_velocity_y = 0.0f;
+    std::float_t angular_velocity_z = 0.0f;
+    std::float_t linear_acceleration_x = 0.0f;
+    std::float_t linear_acceleration_y = 0.0f;
+    std::float_t linear_acceleration_z = 0.0f;
 };
 #pragma pack(pop)
 
@@ -84,6 +102,7 @@ struct DroneReply
 {
     DroneMethods method;
     BarometerSensorDataRep barometer;
+    ImuSensorDataRep imu;
 };
 #pragma pack(pop)
 

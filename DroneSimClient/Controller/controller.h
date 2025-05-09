@@ -11,6 +11,7 @@
 #include <QSharedPointer>
 #include "../ControllDroneServer/DroneRpc.hpp"
 
+using namespace drone;
 
 /// <summary>
 /// Контроллер приложения
@@ -42,7 +43,9 @@ private:
         {drone::DroneMethods::ToRight, "ToRight"},
         {drone::DroneMethods::ToLeft, "ToLeft"},
         {drone::DroneMethods::ToForward, "ToForward"},
-        {drone::DroneMethods::ToBack, "ToBack"}
+        {drone::DroneMethods::ToBack, "ToBack"},
+        {drone::DroneMethods::RotateLeft, "RotateLeft"},
+        {drone::DroneMethods::RotateRight, "RotateRight"}
     };
     QSharedPointer<QTimer> _timer;
 
@@ -77,64 +80,10 @@ private:
 
 public slots:
     /// <summary>
-    /// Запрос на соединение с дроном
+    /// Создание запросов к дрону
     /// </summary>
-    void slotConnect();
-
-    /// <summary>
-    /// Запрос на включение дрона
-    /// </summary>
-    void slotArm();
-
-    /// <summary>
-    /// Запрос на выключение дрона
-    /// </summary>
-    void slotDisarm();
-
-    /// <summary>
-    /// Запрос на взлёт
-    /// </summary>
-    void slotTakeoff();
-
-    /// <summary>
-    /// Запрос на посадку
-    /// </summary>
-    void slotLanding();
-
-    /// <summary>
-    /// Запрос на тестовый полёт
-    /// </summary>
-    void slotTestBox();
-
-    /// <summary>
-    /// Запрос на полёт вверк
-    /// </summary>
-    void slotToUpFly();
-
-    /// <summary>
-    /// Запрос на полёт вверк
-    /// </summary>
-    void slotToDownFly();
-
-    /// <summary>
-    /// Запрос на полёт вперёд
-    /// </summary>
-    void slotToForwardFly();
-
-    /// <summary>
-    /// Запрос на полёт назад
-    /// </summary>
-    void slotToBackFly();
-
-    /// <summary>
-    /// Запрос на полёт вправо
-    /// </summary>
-    void slotToRightFly();
-
-    /// <summary>
-    /// Запрос на полёт влево
-    /// </summary>
-    void slotToLeftFly();
+    /// <param name="cmd">Команда</param>
+    void slotBtnCmd(const int &cmd);
 
     /// <summary>
     /// Обработка нажатий клавишь
@@ -163,6 +112,16 @@ signals:
     /// param name="isError">Флаг ошибки</param>
     /// <param name="text">Строка лога</param>
     void signalSendRequest(const bool &isError, const QString &text);
+
+    /// <summary>
+    /// Отправка в UI данных барометра
+    /// </summary>
+    void signalBarometerSensorData(const BarometerSensorDataRep &data);
+
+    /// <summary>
+    /// Отправка в UI данных ИНС
+    /// </summary>
+    void signalImuSensorData(const ImuSensorDataRep &data);
 };
 
 
