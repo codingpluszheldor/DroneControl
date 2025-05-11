@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent)
     twBarometer->resizeColumnsToContents();
     twAngularVel->resizeColumnsToContents();
     twLinearAccel->resizeColumnsToContents();
+    twGps->resizeColumnsToContents();
+    twMagnetometer->resizeColumnsToContents();
 
     // Параметры по умолчанию
     sbSpeed->setValue(5.0);
@@ -125,6 +127,10 @@ void MainWindow::setController(Controller *controller)
             this, &MainWindow::slotBarometerSensorData, Qt::QueuedConnection);
     connect(controller, &Controller::signalImuSensorData,
             this, &MainWindow::slotImuSensorData, Qt::QueuedConnection);
+    connect(controller, &Controller::signalGpsSensorData,
+            this, &MainWindow::slotGpsSensorData, Qt::QueuedConnection);
+    connect(controller, &Controller::signalMagnetometerSensorData,
+            this, &MainWindow::slotMagnetometerSensorData, Qt::QueuedConnection);
 }
 
 void MainWindow::slotAddLogText(const bool &isError, const QString &text)
@@ -137,7 +143,7 @@ void MainWindow::slotAddLogText(const bool &isError, const QString &text)
 
 void MainWindow::slotBarometerSensorData(const drone::BarometerSensorDataRep &data)
 {
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < twBarometer->rowCount(); i++) {
         if (twBarometer->item(i, 1) == nullptr) {
             QTableWidgetItem *item = new QTableWidgetItem();
             twBarometer->setItem(i, 1, item);
@@ -151,7 +157,7 @@ void MainWindow::slotBarometerSensorData(const drone::BarometerSensorDataRep &da
 
 void  MainWindow::slotImuSensorData(const ImuSensorDataRep &data)
 {
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < twAngularVel->rowCount(); i++) {
         if (twAngularVel->item(i, 1) == nullptr) {
             QTableWidgetItem *item = new QTableWidgetItem();
             twAngularVel->setItem(i, 1, item);
@@ -171,4 +177,38 @@ void  MainWindow::slotImuSensorData(const ImuSensorDataRep &data)
     twLinearAccel->item(1, 1)->setText(QString::number(data.linear_acceleration_y, 'f', 2));
     twLinearAccel->item(2, 1)->setText(QString::number(data.linear_acceleration_z, 'f', 2));
     twLinearAccel->resizeColumnsToContents();
+}
+
+void MainWindow::slotGpsSensorData(const GpsSensorDataRep &data)
+{
+    for (int i = 0; i < twGps->rowCount(); i++) {
+        if (twGps->item(i, 1) == nullptr) {
+            QTableWidgetItem *item = new QTableWidgetItem();
+            twGps->setItem(i, 1, item);
+        }
+    }
+
+    twGps->item(0, 1)->setText(QString::number(data.latitude, 'f', 2));
+    twGps->item(1, 1)->setText(QString::number(data.longitude, 'f', 2));
+    twGps->item(2, 1)->setText(QString::number(data.altitude, 'f', 2));
+    twGps->item(3, 1)->setText(QString::number(data.velocity_x, 'f', 2));
+    twGps->item(4, 1)->setText(QString::number(data.velocity_y, 'f', 2));
+    twGps->item(5, 1)->setText(QString::number(data.velocity_z, 'f', 2));
+    twGps->item(6, 1)->setText(QString::number(data.eph, 'f', 2));
+    twGps->item(7, 1)->setText(QString::number(data.epv, 'f', 2));
+}
+
+
+void MainWindow::slotMagnetometerSensorData(const MagnetometerSensorDataRep &data)
+{
+    for (int i = 0; i < twMagnetometer->rowCount(); i++) {
+        if (twMagnetometer->item(i, 1) == nullptr) {
+            QTableWidgetItem *item = new QTableWidgetItem();
+            twMagnetometer->setItem(i, 1, item);
+        }
+    }
+
+    twMagnetometer->item(0, 1)->setText(QString::number(data.x, 'f', 2));
+    twMagnetometer->item(1, 1)->setText(QString::number(data.y, 'f', 2));
+    twMagnetometer->item(2, 1)->setText(QString::number(data.z, 'f', 2));
 }

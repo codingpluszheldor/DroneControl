@@ -83,8 +83,7 @@ public:
     /// </summary>
     BarometerBase::Output barometerData()
     {
-        auto barometer_data = _client.getBarometerData();
-        return barometer_data;
+        return _client.getBarometerData();
     }
 
     /// <summary>
@@ -92,8 +91,7 @@ public:
     /// </summary>
     ImuBase::Output imuData()
     {
-        auto imu_data = _client.getImuData();
-        return imu_data;
+        return _client.getImuData();
     }
 
     /// <summary>
@@ -101,8 +99,7 @@ public:
     /// </summary>
     GpsBase::Output gpsData()
     {
-        auto gps_data = _client.getGpsData();
-        return gps_data;
+        return _client.getGpsData();
     }
 
     /// <summary>
@@ -110,8 +107,18 @@ public:
     /// </summary>
     MagnetometerBase::Output magnetometerData()
     {
-        auto magnetometer_data = _client.getMagnetometerData();
-        return magnetometer_data;
+        return _client.getMagnetometerData();
+    }
+
+    /// <summary>
+    /// ¬озвращает изображение с камеры Vas: пока только тест
+    /// </summary>
+    const std::vector<ImageResponse> cameraImage()
+    {
+        const std::vector<ImageRequest> request{ ImageRequest("0", ImageType::Scene, false, true) };
+        const std::vector<ImageResponse> response = _client.simGetImages(request);
+
+        return response;
     }
 
     /// <summary>

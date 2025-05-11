@@ -62,6 +62,7 @@ struct DroneMethodReq
     float yaw_or_rate = 0.0f; // угол рысканья
     float speed = 5.0f; // скорость
     int drivetrain = 1; // DrivetrainType::ForwardOnly;
+    bool get_camera_image = false;
 };
 #pragma pack(pop)
 
@@ -95,6 +96,39 @@ struct ImuSensorDataRep
 #pragma pack(pop)
 
 /// <summary>
+/// Структура ответа от ИНС
+/// </summary>
+#pragma pack(push, 1)
+struct GpsSensorDataRep
+{
+    std::uint64_t time_point = 0;
+    std::double_t latitude = 0.0;
+    std::double_t longitude = 0.0;
+    std::float_t  altitude = 0.0f;
+    std::float_t velocity_x = 0.0f;
+    std::float_t velocity_y = 0.0f;
+    std::float_t velocity_z = 0.0f;
+    //GPS HDOP/VDOP horizontal/vertical dilution of position (unitless), 0-100%
+    std::float_t eph;
+    std::float_t epv;
+    bool is_valid = false;
+};
+#pragma pack(pop)
+
+/// <summary>
+/// Структура ответа от магнитометра
+/// </summary>
+#pragma pack(push, 1)
+struct MagnetometerSensorDataRep
+{
+    std::uint64_t time_point = 0;
+    std::float_t x = 0.0f;
+    std::float_t y = 0.0f;
+    std::float_t z = 0.0f;
+};
+#pragma pack(pop)
+
+/// <summary>
 /// Структура общего ответа
 /// </summary>
 #pragma pack(push, 1)
@@ -103,6 +137,10 @@ struct DroneReply
     DroneMethods method;
     BarometerSensorDataRep barometer;
     ImuSensorDataRep imu;
+    GpsSensorDataRep gps;
+    MagnetometerSensorDataRep magnetometer;
+    //size_t image_size = 0;
+    //std::uint8_t image[1024 * 190];
 };
 #pragma pack(pop)
 

@@ -10,6 +10,8 @@ Controller::Controller(QObject *parent)
     using namespace drone;
     qRegisterMetaType<BarometerSensorDataRep>("BarometerSensorDataRep");
     qRegisterMetaType<ImuSensorDataRep>("ImuSensorDataRep");
+    qRegisterMetaType<GpsSensorDataRep>("GpsSensorDataRep");
+    qRegisterMetaType<MagnetometerSensorDataRep>("MagnetometerSensorDataRep");
 
     _timer = QSharedPointer<QTimer>(new QTimer(this));
     connect(_timer.data(), &QTimer::timeout, this, &Controller::slotTimeOut);
@@ -61,6 +63,10 @@ bool Controller::sendRequest(drone::DroneMethodReq *request)
             _replyText = QString("<-- [%1] Получен ответ от сервера").arg(_methodNames.value(reply->method));
             emit signalBarometerSensorData(reply->barometer);
             emit signalImuSensorData(reply->imu);
+            if (reply->gps.is_valid) {
+                emit signalGpsSensorData(reply->gps);
+            }
+            emit signalMagnetometerSensorData(reply->magnetometer);
         } else {
             _errorText = QString("[%1] Ошибка приема ответа").arg(_methodNames.value(request->method));
             qDebug() << _errorText;

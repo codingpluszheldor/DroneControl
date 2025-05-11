@@ -122,6 +122,16 @@ signals:
     /// Отправка в UI данных ИНС
     /// </summary>
     void signalImuSensorData(const ImuSensorDataRep &data);
+
+    /// <summary>
+    /// Отправка в UI данных GPS
+    /// </summary>
+    void signalGpsSensorData(const GpsSensorDataRep &data);
+
+    /// <summary>
+    /// Отправка в UI данных компаса
+    /// </summary>
+    void signalMagnetometerSensorData(const MagnetometerSensorDataRep &data);
 };
 
 

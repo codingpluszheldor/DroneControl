@@ -98,93 +98,78 @@ public:
     /// <summary>
     /// ќсновной цикл программы
     /// </summary>
-    void airSimApi(const DroneMethods& method)
+    void airSimApi(const DroneMethods& method, const bool get_image = false)
     {
         try {
             switch (method) {
-            case DroneMethods::BarometerData: {
-                BarometerBase::Output barometer_data = std::move(_client.barometerData());
-                DroneReply* reply = new DroneReply;
-                reply->method = DroneMethods::BarometerData;
-                reply->barometer = {
-                    barometer_data.time_stamp,
-                    barometer_data.altitude,
-                    barometer_data.pressure,
-                    barometer_data.qnh
-                };
-                _response = std::vector<std::byte>(reinterpret_cast<const std::byte*>(reply),
-                                                   reinterpret_cast<const std::byte*>(reply + sizeof(DroneReply)));
-                delete reply;
-                break;
-            }
             case DroneMethods::Connection: {
                 _client.connection();
-                makeResponseControl(DroneMethods::Connection);
+                makeResponseControl(DroneMethods::Connection, get_image);
                 break;
             }
             case DroneMethods::Takeoff: {
                 _client.takeoff();
-                makeResponseControl(DroneMethods::Takeoff);
+                makeResponseControl(DroneMethods::Takeoff, get_image);
                 break;
             }
             case DroneMethods::TestFlyBox: {
                 _client.testFlyBox();
-                makeResponseControl(DroneMethods::TestFlyBox);
+                makeResponseControl(DroneMethods::TestFlyBox, get_image);
                 break;
             }
             case DroneMethods::Landing: {
                 _client.landing();
-                makeResponseControl(DroneMethods::Landing);
+                makeResponseControl(DroneMethods::Landing, get_image);
                 break;
             }
             case DroneMethods::Arm: {
                 _client.armDisarm();
-                makeResponseControl(DroneMethods::Arm);
+                makeResponseControl(DroneMethods::Arm, get_image);
                 break;
             }
             case DroneMethods::Disarm: {
                 _client.armDisarm(false);
-                makeResponseControl(DroneMethods::Disarm);
+                makeResponseControl(DroneMethods::Disarm, get_image);
                 break;
             }
             case DroneMethods::ToUp: {
                 _client.toUpFly();
-                makeResponseControl(DroneMethods::ToUp);
+                makeResponseControl(DroneMethods::ToUp, get_image);
                 break;
             }
             case DroneMethods::ToDown: {
                 _client.toDownFly();
-                makeResponseControl(DroneMethods::ToDown);
+                makeResponseControl(DroneMethods::ToDown, get_image);
                 break;
             }
             case DroneMethods::ToForward: {
                 _client.toForwardFly();
-                makeResponseControl(DroneMethods::ToForward);
+                makeResponseControl(DroneMethods::ToForward, get_image);
                 break;
             }
             case DroneMethods::ToRight: {
                 _client.toRightFly();
-                makeResponseControl(DroneMethods::ToRight);
+                makeResponseControl(DroneMethods::ToRight, get_image);
                 break;
             }
             case DroneMethods::ToLeft: {
                 _client.toLeftFly();
-                makeResponseControl(DroneMethods::ToLeft);
+                makeResponseControl(DroneMethods::ToLeft, get_image);
                 break;
             }
             case DroneMethods::ToBack: {
                 _client.toBackFly();
-                makeResponseControl(DroneMethods::ToBack);
+                makeResponseControl(DroneMethods::ToBack, get_image);
                 break;
             }
             case DroneMethods::RotateLeft: {
                 _client.rotateByYaw();
-                makeResponseControl(DroneMethods::RotateLeft);
+                makeResponseControl(DroneMethods::RotateLeft, get_image);
                 break;
             }
             case DroneMethods::RotateRight: {
                 _client.rotateByYaw(false);
-                makeResponseControl(DroneMethods::RotateRight);
+                makeResponseControl(DroneMethods::RotateRight, get_image);
                 break;
             }
             }
@@ -214,7 +199,7 @@ public:
                 DroneMethodReq *request = reinterpret_cast<DroneMethodReq*>(incoming_message.data());
                 if (request != nullptr) {
                     airSimParams(request);
-                    airSimApi(request->method);
+                    airSimApi(request->method, request->get_camera_image);
                 } else {
                     continue;
                 }
@@ -243,13 +228,13 @@ private:
     /// <summary>
     /// —оздание структуры ответа на упрал€ющую команду
     /// </summary>
-    void makeResponseControl(const DroneMethods method)
+    void makeResponseControl(const DroneMethods method, const bool get_image = false)
     {
         DroneReply* reply = new DroneReply;
         reply->method = method;
 
         if (method != DroneMethods::Connection) {
-            BarometerBase::Output barometer_data = std::move(_client.barometerData());
+            BarometerBase::Output &&barometer_data = _client.barometerData();
             reply->barometer = {
                 barometer_data.time_stamp,
                 barometer_data.altitude,
@@ -257,17 +242,51 @@ private:
                 barometer_data.qnh
             };
 
-            ImuBase::Output imu_data = std::move(_client.imuData());
-            std::stringstream ss_vel{ std::stringstream() << imu_data.angular_velocity };
-            std::stringstream ss_accel{ std::stringstream() << imu_data.linear_acceleration };
-            ImuSensorDataRep imu;
-            ss_vel >> imu.angular_velocity_x;
-            ss_vel >> imu.angular_velocity_y;
-            ss_vel >> imu.angular_velocity_z;
-            ss_accel >> imu.linear_acceleration_x;
-            ss_accel >> imu.linear_acceleration_y;
-            ss_accel >> imu.linear_acceleration_z;
-            reply->imu = imu;
+            ImuBase::Output &&imu_data = _client.imuData();
+            reply->imu = {
+                imu_data.time_stamp,
+                imu_data.angular_velocity.x(),
+                imu_data.angular_velocity.y(),
+                imu_data.angular_velocity.z(),
+                imu_data.linear_acceleration.x(),
+                imu_data.linear_acceleration.y(),
+                imu_data.linear_acceleration.z(),
+            };
+
+            GpsBase::Output &&gps_data = _client.gpsData();
+            reply->gps = {
+                gps_data.time_stamp,
+                gps_data.gnss.geo_point.latitude,
+                gps_data.gnss.geo_point.longitude,
+                gps_data.gnss.geo_point.altitude,
+                gps_data.gnss.velocity.x(),
+                gps_data.gnss.velocity.y(),
+                gps_data.gnss.velocity.z(),
+                gps_data.gnss.eph,
+                gps_data.gnss.epv,
+                gps_data.is_valid
+            };
+
+            MagnetometerBase::Output&& magnetometer_data = _client.magnetometerData();
+            reply->magnetometer = {
+                magnetometer_data.time_stamp,
+                magnetometer_data.magnetic_field_body.x(),
+                magnetometer_data.magnetic_field_body.y(),
+                magnetometer_data.magnetic_field_body.z()
+            };  
+
+
+            if (get_image) {
+                const std::vector<ImageResponse> img_response = _client.cameraImage();
+                // VAS: test to files
+                for (const ImageResponse& image_info : img_response) {
+                    std::string path = "D:\\Documents\\AirSim\\Recordings";
+                    std::string file_path = FileSystem::combine(path, std::to_string(image_info.time_stamp));
+                    std::ofstream file(file_path + ".png", std::ios::binary);
+                    file.write(reinterpret_cast<const char*>(image_info.image_data_uint8.data()), image_info.image_data_uint8.size());
+                    file.close();
+                }
+            }
         }
         
         _response = std::vector<std::byte>(reinterpret_cast<const std::byte*>(reply),

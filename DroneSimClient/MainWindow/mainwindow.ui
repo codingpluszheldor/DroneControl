@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>905</width>
-    <height>850</height>
+    <width>1233</width>
+    <height>872</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Управление дроном</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_17">
+   <layout class="QVBoxLayout" name="verticalLayout_18">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
@@ -226,7 +226,7 @@
                  <item>
                   <widget class="QLabel" name="label_2">
                    <property name="text">
-                    <string>Наклон</string>
+                    <string>Режим полёта</string>
                    </property>
                   </widget>
                  </item>
@@ -465,175 +465,360 @@
       <property name="title">
        <string>Телеметрия</string>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_11">
+      <layout class="QHBoxLayout" name="horizontalLayout_7">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_6">
-         <item>
-          <widget class="QGroupBox" name="groupBox_6">
-           <property name="title">
-            <string>Барометр</string>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_10">
-            <item>
-             <widget class="QTableWidget" name="twBarometer">
-              <row>
-               <property name="text">
-                <string/>
-               </property>
-              </row>
-              <row>
-               <property name="text">
-                <string/>
-               </property>
-              </row>
-              <row>
-               <property name="text">
-                <string/>
-               </property>
-              </row>
-              <column>
-               <property name="text">
-                <string>Параметр</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Значение</string>
-               </property>
-              </column>
-              <item row="0" column="0">
-               <property name="text">
-                <string>Высота</string>
-               </property>
-              </item>
-              <item row="1" column="0">
-               <property name="text">
-                <string>Давление</string>
-               </property>
-              </item>
-              <item row="2" column="0">
-               <property name="text">
-                <string>qnh</string>
-               </property>
-              </item>
-             </widget>
+        <widget class="QGroupBox" name="groupBox_6">
+         <property name="title">
+          <string>Барометр</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_10">
+          <item>
+           <widget class="QTableWidget" name="twBarometer">
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <column>
+             <property name="text">
+              <string>Параметр</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Значение</string>
+             </property>
+            </column>
+            <item row="0" column="0">
+             <property name="text">
+              <string>Высота</string>
+             </property>
             </item>
-           </layout>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="groupBox_7">
-           <property name="title">
-            <string>ИНС</string>
-           </property>
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
-            <item>
-             <widget class="QTableWidget" name="twAngularVel">
-              <row>
-               <property name="text">
-                <string/>
-               </property>
-              </row>
-              <row>
-               <property name="text">
-                <string/>
-               </property>
-              </row>
-              <row>
-               <property name="text">
-                <string/>
-               </property>
-              </row>
-              <column>
-               <property name="text">
-                <string>Угловая скорость</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Значение</string>
-               </property>
-              </column>
-              <item row="0" column="0">
-               <property name="text">
-                <string>vx</string>
-               </property>
-              </item>
-              <item row="1" column="0">
-               <property name="text">
-                <string>vy</string>
-               </property>
-              </item>
-              <item row="2" column="0">
-               <property name="text">
-                <string>vz</string>
-               </property>
-              </item>
-             </widget>
+            <item row="1" column="0">
+             <property name="text">
+              <string>Давление</string>
+             </property>
             </item>
-            <item>
-             <widget class="QTableWidget" name="twLinearAccel">
-              <row>
-               <property name="text">
-                <string/>
-               </property>
-              </row>
-              <row>
-               <property name="text">
-                <string/>
-               </property>
-              </row>
-              <row>
-               <property name="text">
-                <string/>
-               </property>
-              </row>
-              <column>
-               <property name="text">
-                <string>Линейное ускорение</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Значение</string>
-               </property>
-              </column>
-              <item row="0" column="0">
-               <property name="text">
-                <string>ax</string>
-               </property>
-              </item>
-              <item row="1" column="0">
-               <property name="text">
-                <string>ay</string>
-               </property>
-              </item>
-              <item row="2" column="0">
-               <property name="text">
-                <string>az</string>
-               </property>
-              </item>
-             </widget>
+            <item row="2" column="0">
+             <property name="text">
+              <string>qnh</string>
+             </property>
             </item>
-           </layout>
-          </widget>
-         </item>
-        </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_7">
+         <property name="title">
+          <string>ИНС</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <widget class="QTableWidget" name="twAngularVel">
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <column>
+             <property name="text">
+              <string>Угловая скорость</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Значение</string>
+             </property>
+            </column>
+            <item row="0" column="0">
+             <property name="text">
+              <string>vx</string>
+             </property>
+            </item>
+            <item row="1" column="0">
+             <property name="text">
+              <string>vy</string>
+             </property>
+            </item>
+            <item row="2" column="0">
+             <property name="text">
+              <string>vz</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTableWidget" name="twLinearAccel">
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <column>
+             <property name="text">
+              <string>Линейное ускорение</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Значение</string>
+             </property>
+            </column>
+            <item row="0" column="0">
+             <property name="text">
+              <string>ax</string>
+             </property>
+            </item>
+            <item row="1" column="0">
+             <property name="text">
+              <string>ay</string>
+             </property>
+            </item>
+            <item row="2" column="0">
+             <property name="text">
+              <string>az</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_8">
+         <property name="title">
+          <string>GPS</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item>
+           <widget class="QTableWidget" name="twGps">
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <column>
+             <property name="text">
+              <string>Параметр</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Значение</string>
+             </property>
+            </column>
+            <item row="0" column="0">
+             <property name="text">
+              <string>Широта</string>
+             </property>
+            </item>
+            <item row="1" column="0">
+             <property name="text">
+              <string>Долгота</string>
+             </property>
+            </item>
+            <item row="2" column="0">
+             <property name="text">
+              <string>Высота</string>
+             </property>
+            </item>
+            <item row="3" column="0">
+             <property name="text">
+              <string>vx</string>
+             </property>
+            </item>
+            <item row="4" column="0">
+             <property name="text">
+              <string>vy</string>
+             </property>
+            </item>
+            <item row="5" column="0">
+             <property name="text">
+              <string>vz</string>
+             </property>
+            </item>
+            <item row="6" column="0">
+             <property name="text">
+              <string>HDOP</string>
+             </property>
+            </item>
+            <item row="7" column="0">
+             <property name="text">
+              <string>VDOP</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_9">
+         <property name="title">
+          <string>Магнитометр</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <widget class="QTableWidget" name="twMagnetometer">
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <row>
+             <property name="text">
+              <string/>
+             </property>
+            </row>
+            <column>
+             <property name="text">
+              <string>Параметр</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>Значение</string>
+             </property>
+            </column>
+            <item row="0" column="0">
+             <property name="text">
+              <string>x</string>
+             </property>
+            </item>
+            <item row="1" column="0">
+             <property name="text">
+              <string>y</string>
+             </property>
+            </item>
+            <item row="2" column="0">
+             <property name="text">
+              <string>z</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </widget>
     </item>
     <item>
-     <widget class="QGroupBox" name="groupBox_4">
-      <property name="title">
-       <string>Логирование</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_9">
-       <item>
-        <widget class="QTextEdit" name="teLog"/>
-       </item>
-      </layout>
-     </widget>
+     <layout class="QHBoxLayout" name="horizontalLayout_8">
+      <item>
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="maximumSize">
+         <size>
+          <width>500</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>Логирование</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_9">
+         <item>
+          <widget class="QTextEdit" name="teLog"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_10">
+        <property name="title">
+         <string>Камера</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_17">
+         <item>
+          <widget class="QCheckBox" name="cBoxGetImage">
+           <property name="text">
+            <string>Запрос изображения</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelImage">
+           <property name="text">
+            <string>No image</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
@@ -642,7 +827,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>905</width>
+     <width>1233</width>
      <height>21</height>
     </rect>
    </property>

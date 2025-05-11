@@ -41,6 +41,16 @@ public slots:
     /// </summary>
     void slotImuSensorData(const ImuSensorDataRep &data);
 
+    /// <summary>
+    /// Отображение данных GPS
+    /// </summary>
+    void slotGpsSensorData(const GpsSensorDataRep &data);
+
+    /// <summary>
+    /// Отображение данных компаса
+    /// </summary>
+    void slotMagnetometerSensorData(const MagnetometerSensorDataRep &data);
+
 private slots:
     /// <summary>
     /// Обновление параметров в контроллере
