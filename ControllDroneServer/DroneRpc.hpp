@@ -139,8 +139,6 @@ struct DroneReply
     ImuSensorDataRep imu;
     GpsSensorDataRep gps;
     MagnetometerSensorDataRep magnetometer;
-    //size_t image_size = 0;
-    //std::uint8_t image[1024 * 190];
 };
 #pragma pack(pop)
 

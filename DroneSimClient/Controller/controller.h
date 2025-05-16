@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QQueue>
 #include <QTimer>
+#include <QFuture>
 #include <QSharedPointer>
 #include "../ControllDroneServer/DroneRpc.hpp"
 
@@ -22,6 +23,7 @@ class Controller : public QObject
 
 private:
     int _clientSock = -1;
+    int _serverSock = -1;
     QString _errorText;
     QString _requestText;
     QString _replyText;
@@ -48,12 +50,15 @@ private:
         {drone::DroneMethods::RotateRight, "RotateRight"}
     };
     QSharedPointer<QTimer> _timer;
+    QFuture<void> _future;      // результат работы потока
+    std::atomic<bool> _isStarted {true};
 
     // Параметры запроса из Ui
     bool _yaw_is_rate = true;
     float _yaw_or_rate = 0.0f; // угол рысканья
     float _speed = 5.0f; // скорость
     int _drivetrain = 1;
+    bool _get_image = false;
 
 public:
     explicit Controller(QObject *parent = nullptr);
@@ -78,6 +83,11 @@ private:
     /// <returns>Результат выполнения отправки по сети</returns>
     bool sendRequest(drone::DroneMethodReq *request);
 
+    /// <summary>
+    /// Цикл приёма изображения от камеры
+    /// </summary>
+    void cameraImageLoop();
+
 public slots:
     /// <summary>
     /// Создание запросов к дрону
@@ -97,7 +107,8 @@ public slots:
     void slotSetParams(const bool &yaw_is_rate,
                        const float &yaw_or_rate,
                        const float &speed,
-                       const int &drivetrain);
+                       const int &drivetrain,
+                       const bool &get_image);
 
 private slots:
     /// <summary>
@@ -132,6 +143,12 @@ signals:
     /// Отправка в UI данных компаса
     /// </summary>
     void signalMagnetometerSensorData(const MagnetometerSensorDataRep &data);
+
+    /// <summary>
+    /// Сигнал отправляет изображение, принятое через nanomsg
+    /// </summary>
+    void signalReceivedData(const QByteArray &buffer);
+
 };
 
 

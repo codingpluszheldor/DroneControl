@@ -82,7 +82,8 @@ signals:
     void signalSetParams(const bool &yaw_is_rate,
                          const float &yaw_or_rate,
                          const float &speed,
-                         const int &drivetrain);
+                         const int &drivetrain,
+                         const bool &get_image);
 };
 
 #endif // MAINWINDOW_H

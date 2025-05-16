@@ -1,6 +1,8 @@
 #include <QDateTime>
+#include <QtConcurrent>
 #include <compat/nanomsg/nn.h>
 #include <compat/nanomsg/reqrep.h>
+#include <compat/nanomsg/pipeline.h>
 #include "controller.h"
 
 
@@ -20,6 +22,7 @@ Controller::Controller(QObject *parent)
 
 Controller::~Controller()
 {
+     _isStarted = false;
     if (_clientSock > -1) {
         nn_shutdown(_clientSock, 0);
         nn_close(_clientSock);
@@ -39,6 +42,12 @@ bool Controller::setInit()
         qDebug() << "Ошибка соединения с сервером";
         nn_close(_clientSock);
         return false;
+    }
+
+    if (!_future.isRunning()) {
+        _future = QtConcurrent::run(this, &Controller::cameraImageLoop);
+        _isStarted = true;
+        qDebug() << "Start cameraImageLoop";
     }
 
     return true;
@@ -86,6 +95,7 @@ void Controller::makeRequest(const drone::DroneMethods &method)
     request->yaw_or_rate = _yaw_or_rate;
     request->drivetrain = _drivetrain;
     request->time_point = QDateTime::currentSecsSinceEpoch();
+    request->get_camera_image = _get_image;
 
     if (_lastCmd != method) {
         while (!_cmqQueue.isEmpty()) {
@@ -153,10 +163,50 @@ void Controller::slotKeyPressed(const int &key)
 void Controller::slotSetParams(const bool &yaw_is_rate,
                                const float &yaw_or_rate,
                                const float &speed,
-                               const int &drivetrain)
+                               const int &drivetrain,
+                               const bool &get_image)
 {
     _yaw_is_rate = yaw_is_rate;
     _yaw_or_rate = yaw_or_rate;
     _speed = speed;
     _drivetrain = drivetrain;
+    _get_image = get_image;
+}
+
+void Controller::cameraImageLoop()
+{
+    _serverSock = nn_socket(AF_SP, NN_PULL);
+    if (_serverSock < 0) {
+        qDebug() << "Ошибка инициализации socket";
+        return;
+    }
+
+    if (nn_bind(_serverSock, "tcp://127.0.0.1:20002") < 0) {
+        qDebug() << "Ошибка bind socket";
+        return;
+    }
+
+    int to = 100;
+    if (nn_setsockopt(_serverSock, NN_SOL_SOCKET, NN_RCVTIMEO, &to, sizeof(to)) < 0) {
+        qDebug() << "Ошибка set socket options";
+    }
+
+    qDebug() << "Приём от камеры.........";
+    while (_isStarted)
+    {
+        char *buf = NULL;
+        int bytes = nn_recv(_serverSock, &buf, NN_MSG, 0);
+        if (bytes > 0) {
+            if (_isStarted) {
+                QByteArray buffer(buf, bytes);
+                emit signalReceivedData(buffer);
+                qDebug() << "Принято:" << buffer.size();
+            }
+            nn_freemsg(buf);
+        }
+        else if (bytes == 0) {
+            nn_freemsg(buf);
+        }
+    }
+    qDebug() << "Окончание приёма от камеры.........";
 }

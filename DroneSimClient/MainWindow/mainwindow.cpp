@@ -66,7 +66,8 @@ void MainWindow::slotTimeOut()
     emit signalSetParams(rbYaw->isChecked(),
                          sbYaw->value(),
                          sbSpeed->value(),
-                         cBoxDrivetrainType->currentIndex());
+                         cBoxDrivetrainType->currentIndex(),
+                         cBoxGetImage->isChecked());
 }
 
 void MainWindow::setController(Controller *controller)
