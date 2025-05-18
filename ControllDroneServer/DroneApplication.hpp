@@ -19,6 +19,7 @@ STRICT_MODE_ON
 
 #include <compat/nanomsg/nn.h>
 #include <compat/nanomsg/reqrep.h>
+#include <compat/nanomsg/pipeline.h>
 
 #include "DroneAirSimClient.hpp"
 #include "DroneRpc.hpp"
@@ -190,7 +191,7 @@ public:
     /// </summary>
     void cameraImageLoop()
     {
-        _client_sock = nn_socket(AF_SP, NN_REQ);
+        _client_sock = nn_socket(AF_SP, NN_PUSH);
         if (_client_sock < 0) {
             std::cerr << "Ошибка инициализации сокета для отправки данных с камеры\n";
             return;
@@ -207,14 +208,14 @@ public:
         while (_running) {
             try {
                 if (_get_image) {
-                    std::cout << "Запрос изображения от камеры... " << '\n';
+                    //std::cout << "Запрос изображения от камеры... " << '\n';
                     const std::vector<ImageResponse> img_response = _client.cameraImage();
                     for (const ImageResponse& image_info : img_response) {
                         int send_result = nn_send(_client_sock,
                                                   reinterpret_cast<const char*>(image_info.image_data_uint8.data()),
                                                   image_info.image_data_uint8.size(),
                                                   0);
-                        std::cout << "Отравлено от камеры, размер: " << image_info.image_data_uint8.size() << '\n';
+                        //std::cout << "Отравлено от камеры, размер: " << image_info.image_data_uint8.size() << '\n';
                         if (send_result < 0) {
                             std::cerr << "Ошибка отправки данных с камеры в сокет\n";
                         }                        
@@ -232,7 +233,7 @@ public:
                 }
                 else {
                     std::this_thread::sleep_for(1s);
-                    std::cout << "Ожидание включения камеры камеры... " << '\n';
+                    //std::cout << "Ожидание включения камеры камеры... " << '\n';
                 }
             }
             catch (...) {
@@ -279,6 +280,21 @@ public:
                 // Ответ
                 std::cout << "Отправка, размер: " << _response.size() << std::endl;
                 _outgoing_queue.push(std::move(_response)); 
+
+                //using namespace std::chrono_literals;
+                //if (_get_image) {
+                //    std::cout << "Запрос изображения от камеры... " << '\n';
+                //    const std::vector<ImageResponse> img_response = _client.cameraImage();
+                //        // VAS: test to files
+                //    for (const ImageResponse& image_info : img_response) {
+                //        std::string path = "D:\\Documents\\AirSim\\Recordings";
+                //        std::string file_path = FileSystem::combine(path, std::to_string(image_info.time_stamp));
+                //        std::ofstream file(file_path + ".png", std::ios::binary);
+                //        file.write(reinterpret_cast<const char*>(image_info.image_data_uint8.data()), image_info.image_data_uint8.size());
+                //        file.close();
+                //        std::cout << "Запись изображения" << '\n';
+                //    }
+                //}
             }
         }
         catch (...) {

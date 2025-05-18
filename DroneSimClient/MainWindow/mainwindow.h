@@ -51,6 +51,11 @@ public slots:
     /// </summary>
     void slotMagnetometerSensorData(const MagnetometerSensorDataRep &data);
 
+    /// <summary>
+    /// Сигнал отправляет изображение, принятое через nanomsg
+    /// </summary>
+    void slotReceivedImageData(const QByteArray &buffer);
+
 private slots:
     /// <summary>
     /// Обновление параметров в контроллере

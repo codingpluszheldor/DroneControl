@@ -1,5 +1,6 @@
 #include <QDateTime>
 #include <QKeyEvent>
+#include <QImageReader>
 #include "mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -132,6 +133,9 @@ void MainWindow::setController(Controller *controller)
             this, &MainWindow::slotGpsSensorData, Qt::QueuedConnection);
     connect(controller, &Controller::signalMagnetometerSensorData,
             this, &MainWindow::slotMagnetometerSensorData, Qt::QueuedConnection);
+    // Камера
+    connect(controller, &Controller::signalReceivedImageData,
+            this, &MainWindow::slotReceivedImageData, Qt::QueuedConnection);
 }
 
 void MainWindow::slotAddLogText(const bool &isError, const QString &text)
@@ -212,4 +216,21 @@ void MainWindow::slotMagnetometerSensorData(const MagnetometerSensorDataRep &dat
     twMagnetometer->item(0, 1)->setText(QString::number(data.x, 'f', 2));
     twMagnetometer->item(1, 1)->setText(QString::number(data.y, 'f', 2));
     twMagnetometer->item(2, 1)->setText(QString::number(data.z, 'f', 2));
+}
+
+void MainWindow::slotReceivedImageData(const QByteArray &buffer)
+{
+    QPixmap pixmap;
+    pixmap.loadFromData(buffer);
+    labelImage->setPixmap(pixmap);
+    // QString filePath = "D:/Documents/AirSim/Recordings/image_";
+    // QFile file(filePath + QString::number(QDateTime::currentSecsSinceEpoch()) + ".png");
+    // if (!file.open(QIODevice::WriteOnly)) {
+    //     qWarning() << "Failed to open the image file.";
+    //     return;
+    // }
+
+    // file.write(buffer);
+    // file.flush();
+    // file.close();
 }

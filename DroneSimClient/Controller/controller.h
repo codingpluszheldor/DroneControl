@@ -147,7 +147,7 @@ signals:
     /// <summary>
     /// Сигнал отправляет изображение, принятое через nanomsg
     /// </summary>
-    void signalReceivedData(const QByteArray &buffer);
+    void signalReceivedImageData(const QByteArray &buffer);
 
 };
 

@@ -199,8 +199,8 @@ void Controller::cameraImageLoop()
         if (bytes > 0) {
             if (_isStarted) {
                 QByteArray buffer(buf, bytes);
-                emit signalReceivedData(buffer);
-                qDebug() << "Принято:" << buffer.size();
+                emit signalReceivedImageData(buffer);
+                // qDebug() << "Принято:" << buffer.size();
             }
             nn_freemsg(buf);
         }
