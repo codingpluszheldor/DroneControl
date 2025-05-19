@@ -88,7 +88,8 @@ signals:
                          const float &yaw_or_rate,
                          const float &speed,
                          const int &drivetrain,
-                         const bool &get_image);
+                         const bool &get_image,
+                         const int &camera);
 };
 
 #endif // MAINWINDOW_H

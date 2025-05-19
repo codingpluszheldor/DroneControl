@@ -64,6 +64,7 @@ private:
     int _client_sock = -1;
     std::atomic<bool> _get_image{ false };
     std::atomic<bool> _running{ true };
+    std::string _camera_name_val = "front-center";
 
 public:
     /// <summary>
@@ -209,7 +210,7 @@ public:
             try {
                 if (_get_image) {
                     //std::cout << "Запрос изображения от камеры... " << '\n';
-                    const std::vector<ImageResponse> img_response = _client.cameraImage();
+                    const std::vector<ImageResponse> img_response = _client.cameraImage(_camera_name_val);
                     for (const ImageResponse& image_info : img_response) {
                         int send_result = nn_send(_client_sock,
                                                   reinterpret_cast<const char*>(image_info.image_data_uint8.data()),
@@ -262,6 +263,7 @@ public:
                 if (request != nullptr) {
                     _get_image = request->get_camera_image;
                     if (_get_image) {
+                        _camera_name_val = map_cameras[request->camera];
                         std::cout << "Камера включена !!!" << '\n';
                     }
                     else {

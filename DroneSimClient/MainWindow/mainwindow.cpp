@@ -64,11 +64,25 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 
 void MainWindow::slotTimeOut()
 {
+    DroneCamera camera = DroneCamera::front_center;
+    if (rbFrontCenter->isChecked()) {
+        camera = DroneCamera::front_center;
+    } else if (rbFrontRight->isChecked()) {
+        camera = DroneCamera::front_right;
+    } else if (rbFrontLeft->isChecked()) {
+        camera = DroneCamera::front_left;
+    } else if (rbFpv->isChecked()) {
+        camera = DroneCamera::fpv;
+    } else if (rbBackCenter->isChecked()) {
+        camera = DroneCamera::back_center;
+    }
+
     emit signalSetParams(rbYaw->isChecked(),
                          sbYaw->value(),
                          sbSpeed->value(),
                          cBoxDrivetrainType->currentIndex(),
-                         cBoxGetImage->isChecked());
+                         cBoxGetImage->isChecked(),
+                         static_cast<int>(camera));
 }
 
 void MainWindow::setController(Controller *controller)

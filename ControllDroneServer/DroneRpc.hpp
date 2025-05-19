@@ -3,11 +3,13 @@
 
 #include <cinttypes>
 #include <cmath>
+#include <string>
+#include <map>
 
 
 namespace drone
 {
-constexpr std::uint32_t MSG_BUFFER_SIZE = 1024 * 10;
+constexpr std::uint32_t MSG_BUFFER_SIZE = 1024 * 20;
 
 /// <summary>
 /// Сенсоры на борту дрона
@@ -23,10 +25,10 @@ enum class DroneSensors
 /// <summary>
 /// Список комманд для упарвления и получения телеметрии
 /// </summary>
-enum class DroneMethods
+enum class DroneMethods : int
 {
     // Ожидание команды
-    Wait,
+    Wait = 0,
     // Соединения и проверка
     Connection,
     Arm,
@@ -51,6 +53,26 @@ enum class DroneMethods
 };
 
 /// <summary>
+/// Список камер дрона
+/// </summary>
+enum class DroneCamera : int
+{
+    front_center = 0,
+    front_right,
+    front_left,
+    fpv,
+    back_center
+};
+
+static std::map<DroneCamera, std::string> map_cameras = {
+    { DroneCamera::front_center, "front-center" },
+    { DroneCamera::front_right,  "front-right"  },
+    { DroneCamera::front_left,   "front-left"   },
+    { DroneCamera::fpv,          "fpv"          },
+    { DroneCamera::back_center,  "back-center"  }
+};
+
+/// <summary>
 /// Запрос на выполнение команды
 /// </summary>
 #pragma pack(push, 1)
@@ -63,6 +85,7 @@ struct DroneMethodReq
     float speed = 5.0f; // скорость
     int drivetrain = 1; // DrivetrainType::ForwardOnly;
     bool get_camera_image = false;
+    DroneCamera camera = DroneCamera::front_center;
 };
 #pragma pack(pop)
 

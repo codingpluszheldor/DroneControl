@@ -59,6 +59,7 @@ private:
     float _speed = 5.0f; // скорость
     int _drivetrain = 1;
     bool _get_image = false;
+    DroneCamera _camera = DroneCamera::front_center;
 
 public:
     explicit Controller(QObject *parent = nullptr);
@@ -108,7 +109,8 @@ public slots:
                        const float &yaw_or_rate,
                        const float &speed,
                        const int &drivetrain,
-                       const bool &get_image);
+                       const bool &get_image,
+                       const int &camera);
 
 private slots:
     /// <summary>

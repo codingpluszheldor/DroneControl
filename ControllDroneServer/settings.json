@@ -1,0 +1,109 @@
+{
+  "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md",
+  "SettingsVersion": 1.2,
+  "SimMode": "Multirotor",
+  "CameraDefaults": {
+    "CaptureSettings": [
+      {
+        "ImageType": 0,
+        "Width": 320,
+        "Height": 200,
+        "FOV_Degrees": 84
+      }
+    ]
+  },
+    "Gimbal": {
+      "Stabilization": 0.6,
+      "Pitch": -90, "Roll": 0
+  },
+  "Recording": {
+    "RecordOnMove": true,
+    "RecordInterval": 0.05,
+    "Folder": "C:\\Documents\\AirSim\\Recordings",
+    "Enabled": false,
+    "Cameras": [
+        { "CameraName": "3", "ImageType": 0, "PixelsAsFloat": false,  "VehicleName": "SimpleFlight", "Compress": true }
+    ]
+  },
+    "Vehicles": {
+      "SimpleFlight": {
+        "VehicleType": "SimpleFlight",
+	      "DefaultVehicleState": "Inactive",	
+        "X": 2, "Y": 0, "Z": 0.0,
+        "Pitch": -15.0, "Roll": 0.0,"Yaw": 0.0,
+        "Sensors": {
+          "Distance": {
+            "SensorType": 5,
+            "Enabled" : true,
+            "MinDistance": 0.05,
+            "MaxDistance": 80,
+            "X": 0, "Y": 0, "Z": -1,
+            "Pitch": -90, "Roll": 0, "Yaw": 0, 
+            "DrawDebugPoints": false
+        }
+      },
+      "Cameras": {
+        "front-left": {
+          "CaptureSettings": [
+            {
+              "ImageType": 0,
+              "Width": 672,
+              "Height": 376,
+              "FOV_Degrees": 90
+            }
+          ],
+          "X": 0.50, "Y": -20.0, "Z": 0.10,
+          "Pitch": 0.0, "Roll": 0.0, "Yaw": -45.0
+        },
+        "front-center": {
+          "CaptureSettings": [
+            {
+              "ImageType": 0,
+              "Width": 672,
+              "Height": 376,
+              "FOV_Degrees": 90
+            }
+          ],
+          "X": 0.50, "Y": 0.0, "Z": 0.10,
+          "Pitch": -45.0, "Roll": 0.0, "Yaw": 0.0
+        },
+        "front-right": {
+          "CaptureSettings": [
+            {
+              "ImageType": 0,
+              "Width": 672,
+              "Height": 376,
+              "FOV_Degrees": 90
+            }
+          ],
+          "X": 0.50, "Y": 20.0, "Z": 0.10,
+          "Pitch": 0.0, "Roll": 0.0, "Yaw": 45.0
+        },
+        "fpv": {
+          "CaptureSettings": [
+            {
+              "ImageType": 0,
+              "Width": 672,
+              "Height": 376,
+              "FOV_Degrees": 90
+            }
+          ],
+          "X": 0.50, "Y": 0.0, "Z": 0.10,
+          "Pitch": 0.0, "Roll": 0.0, "Yaw": 0.0
+        },
+        "back-center": {
+          "CaptureSettings": [
+            {
+              "ImageType": 0,
+              "Width": 672,
+              "Height": 376,
+              "FOV_Degrees": 90
+            }
+          ],
+          "X": -0.50, "Y": 0.0, "Z": 0.10,
+          "Pitch": -5.0, "Roll": 0.0, "Yaw": 0.0
+        }
+      }
+    }
+  }
+}

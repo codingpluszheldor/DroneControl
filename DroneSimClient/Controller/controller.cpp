@@ -96,6 +96,7 @@ void Controller::makeRequest(const drone::DroneMethods &method)
     request->drivetrain = _drivetrain;
     request->time_point = QDateTime::currentSecsSinceEpoch();
     request->get_camera_image = _get_image;
+    request->camera = _camera;
 
     if (_lastCmd != method) {
         while (!_cmqQueue.isEmpty()) {
@@ -164,13 +165,15 @@ void Controller::slotSetParams(const bool &yaw_is_rate,
                                const float &yaw_or_rate,
                                const float &speed,
                                const int &drivetrain,
-                               const bool &get_image)
+                               const bool &get_image,
+                               const int &camera)
 {
     _yaw_is_rate = yaw_is_rate;
     _yaw_or_rate = yaw_or_rate;
     _speed = speed;
     _drivetrain = drivetrain;
     _get_image = get_image;
+    _camera = static_cast<DroneCamera>(camera);
 }
 
 void Controller::cameraImageLoop()

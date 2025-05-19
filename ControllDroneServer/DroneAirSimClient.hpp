@@ -113,9 +113,9 @@ public:
     /// <summary>
     /// ¬озвращает изображение с камеры Vas: пока только тест
     /// </summary>
-    const std::vector<ImageResponse> cameraImage()
+    const std::vector<ImageResponse> cameraImage(const std::string& camera_name_val)
     {
-        const std::vector<ImageRequest> request{ ImageRequest("0", ImageType::Scene, false, true) };
+        const std::vector<ImageRequest> request{ ImageRequest(camera_name_val, ImageType::Scene, false, true) };
         const std::vector<ImageResponse> response = _client.simGetImages(request);
 
         return response;
