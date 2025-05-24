@@ -6,6 +6,7 @@
 #include "application.h"
 #include "MainWindow/mainwindow.h"
 #include "Controller/controller.h"
+#include "ImageSaver/imagesaver.h"
 
 
 Application::Application(int &argc, char **argv)
@@ -38,6 +39,16 @@ int Application::run()
     connect(controller.data(), SIGNAL(destroyed()), thread, SLOT(quit()), Qt::QueuedConnection);
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()), Qt::QueuedConnection);
     controller->moveToThread(thread);
+    thread->start();
+
+    QSharedPointer<ImageSaver> imageSaver = QSharedPointer<ImageSaver>(new ImageSaver());
+    thread = new QThread();
+    Q_CHECK_PTR(thread);
+    connect(controller.data(), &Controller::signalSaveImage,
+            imageSaver.data(), &ImageSaver::slotSave, Qt::QueuedConnection);
+    connect(imageSaver.data(), SIGNAL(destroyed()), thread, SLOT(quit()), Qt::QueuedConnection);
+    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()), Qt::QueuedConnection);
+    imageSaver->moveToThread(thread);
     thread->start();
 
     return exec();

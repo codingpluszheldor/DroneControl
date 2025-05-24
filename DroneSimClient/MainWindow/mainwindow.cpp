@@ -150,6 +150,17 @@ void MainWindow::setController(Controller *controller)
     // Камера
     connect(controller, &Controller::signalReceivedImageData,
             this, &MainWindow::slotReceivedImageData, Qt::QueuedConnection);
+    // Сохранения
+    connect(this, &MainWindow::signalSetSaveParams,
+            controller, &Controller::slotSetSaveParams, Qt::QueuedConnection);
+    connect(cBoxImages, &QCheckBox::stateChanged,
+            this, [this](int) {
+        emit signalSetSaveParams(cBoxImages->isChecked(), cBoxSensorsData->isChecked());
+    }, Qt::QueuedConnection);
+    connect(cBoxSensorsData, &QCheckBox::stateChanged,
+            this, [this](int) {
+        emit signalSetSaveParams(cBoxImages->isChecked(), cBoxSensorsData->isChecked());
+    }, Qt::QueuedConnection);
 }
 
 void MainWindow::slotAddLogText(const bool &isError, const QString &text)
@@ -237,14 +248,6 @@ void MainWindow::slotReceivedImageData(const QByteArray &buffer)
     QPixmap pixmap;
     pixmap.loadFromData(buffer);
     labelImage->setPixmap(pixmap);
-    // QString filePath = "D:/Documents/AirSim/Recordings/image_";
-    // QFile file(filePath + QString::number(QDateTime::currentSecsSinceEpoch()) + ".png");
-    // if (!file.open(QIODevice::WriteOnly)) {
-    //     qWarning() << "Failed to open the image file.";
-    //     return;
-    // }
-
-    // file.write(buffer);
-    // file.flush();
-    // file.close();
+    _image_counter++;
+    statusbar->showMessage("Images: " + QString::number(_image_counter));
 }

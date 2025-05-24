@@ -204,6 +204,9 @@ void Controller::cameraImageLoop()
                 QByteArray buffer(buf, bytes);
                 emit signalReceivedImageData(buffer);
                 // qDebug() << "Принято:" << buffer.size();
+                if (_save_images) {
+                    emit signalSaveImage(buffer);
+                }
             }
             nn_freemsg(buf);
         }
@@ -212,4 +215,10 @@ void Controller::cameraImageLoop()
         }
     }
     qDebug() << "Окончание приёма от камеры.........";
+}
+
+void Controller::slotSetSaveParams(const bool &save_images, const bool &save_sensors_data)
+{
+    _save_images = save_images;
+    _save_sensors_data = save_sensors_data;
 }

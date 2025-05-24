@@ -60,6 +60,9 @@ private:
     int _drivetrain = 1;
     bool _get_image = false;
     DroneCamera _camera = DroneCamera::front_center;
+    // Сохранеие  данных с дрона
+    bool _save_images = false;
+    bool _save_sensors_data = false;    
 
 public:
     explicit Controller(QObject *parent = nullptr);
@@ -112,6 +115,11 @@ public slots:
                        const bool &get_image,
                        const int &camera);
 
+    /// <summary>
+    /// Установка параметров сохранения
+    /// </summary>
+    void slotSetSaveParams(const bool &save_images, const bool &save_sensors_data);
+
 private slots:
     /// <summary>
     /// Обработка событый таймера
@@ -150,6 +158,11 @@ signals:
     /// Сигнал отправляет изображение, принятое через nanomsg
     /// </summary>
     void signalReceivedImageData(const QByteArray &buffer);
+
+    /// <summary>
+    /// Сигнал отправляет изображение для сохранения на диск
+    /// </summary>
+    void signalSaveImage(const QByteArray &buffer);
 
 };
 

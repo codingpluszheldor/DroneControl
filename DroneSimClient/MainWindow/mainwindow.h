@@ -12,6 +12,8 @@ class MainWindow : public QMainWindow, public Ui::MainWindow
 
 private:
     QSharedPointer<QTimer> _timer;
+    int _image_counter = 0;
+    QString _fileImagesPath = "D:/Documents/AirSim/ClientRecording/image_";
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -90,6 +92,11 @@ signals:
                          const int &drivetrain,
                          const bool &get_image,
                          const int &camera);
+
+    /// <summary>
+    /// Установка параметров сохранения
+    /// </summary>
+    void signalSetSaveParams(const bool &save_images, const bool &save_sensors_data);
 };
 
 #endif // MAINWINDOW_H

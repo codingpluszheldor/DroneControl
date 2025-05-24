@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui concurrent
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -14,6 +14,7 @@ INCLUDEPATH += ../AirLib/include
 SOURCES += \
     Application/application.cpp \
     Controller/controller.cpp \
+    ImageSaver/imagesaver.cpp \
     MainWindow/mainwindow.cpp \
     main.cpp
 
@@ -21,6 +22,7 @@ HEADERS += \
     ../ControllDroneServer/DroneRpc.hpp \
     Application/application.h \
     Controller/controller.h \
+    ImageSaver/imagesaver.h \
     MainWindow/mainwindow.h
 
 FORMS += \

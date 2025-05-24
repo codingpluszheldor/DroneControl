@@ -206,6 +206,8 @@ public:
 
         std::cout << "Камеры готова... " << '\n';
         using namespace std::chrono_literals;
+        // Расчёт задержки
+        //const float delay = (1.0f / 15.0f) * 1000.0f; // 15 fps (кадров/сек) 
         while (_running) {
             try {
                 if (_get_image) {
@@ -221,7 +223,8 @@ public:
                             std::cerr << "Ошибка отправки данных с камеры в сокет\n";
                         }                        
                     }
-                    std::this_thread::sleep_for(100ms);
+                    //std::this_thread::sleep_for(std::chrono::duration<double>(delay));
+                    std::this_thread::sleep_for(15ms);
 
                     // VAS: test to files
                     //for (const ImageResponse& image_info : img_response) {
@@ -282,21 +285,6 @@ public:
                 // Ответ
                 std::cout << "Отправка, размер: " << _response.size() << std::endl;
                 _outgoing_queue.push(std::move(_response)); 
-
-                //using namespace std::chrono_literals;
-                //if (_get_image) {
-                //    std::cout << "Запрос изображения от камеры... " << '\n';
-                //    const std::vector<ImageResponse> img_response = _client.cameraImage();
-                //        // VAS: test to files
-                //    for (const ImageResponse& image_info : img_response) {
-                //        std::string path = "D:\\Documents\\AirSim\\Recordings";
-                //        std::string file_path = FileSystem::combine(path, std::to_string(image_info.time_stamp));
-                //        std::ofstream file(file_path + ".png", std::ios::binary);
-                //        file.write(reinterpret_cast<const char*>(image_info.image_data_uint8.data()), image_info.image_data_uint8.size());
-                //        file.close();
-                //        std::cout << "Запись изображения" << '\n';
-                //    }
-                //}
             }
         }
         catch (...) {
