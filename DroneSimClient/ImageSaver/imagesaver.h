@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QString>
-
+#include <vlc/vlc.h>
 
 /// <summary>
 /// Обработка и сохранения изображений с камеры
@@ -13,7 +13,10 @@ class ImageSaver : public QObject
     Q_OBJECT
 
 private:
-    QString _fileImagesPath = "D:/Documents/AirSim/ClientRecording/image_";
+    QString _fileImagesPath { "D:/Documents/AirSim/ClientRecording/image_" };
+    libvlc_instance_t *_vlc_inst { nullptr };
+    libvlc_media_t *_media { nullptr };
+    libvlc_media_player_t *_mediaPlayer { nullptr };
 
 public:
     explicit ImageSaver(QObject *parent = nullptr);
