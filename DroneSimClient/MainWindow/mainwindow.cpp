@@ -247,7 +247,7 @@ void MainWindow::slotReceivedImageData(const QByteArray &buffer)
 {
     QPixmap pixmap;
     pixmap.loadFromData(buffer);
-    labelImage->setPixmap(pixmap);
+    labelImage->setPixmap(pixmap.scaled(QSize(640, 320)));
     _image_counter++;
     statusbar->showMessage("Images: " + QString::number(_image_counter));
 }

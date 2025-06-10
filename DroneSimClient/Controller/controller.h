@@ -160,7 +160,7 @@ signals:
     void signalReceivedImageData(const QByteArray &buffer);
 
     /// <summary>
-    /// Сигнал отправляет изображение для сохранения на диск
+    /// Сигнал отправляет изображение для сохранения или отображения
     /// </summary>
     void signalSaveImage(const QByteArray &buffer);
 

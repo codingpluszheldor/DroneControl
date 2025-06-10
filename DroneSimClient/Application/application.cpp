@@ -6,7 +6,7 @@
 #include "application.h"
 #include "MainWindow/mainwindow.h"
 #include "Controller/controller.h"
-#include "ImageSaver/imagesaver.h"
+#include "ImageServer/imageserver.h"
 
 
 Application::Application(int &argc, char **argv)
@@ -41,14 +41,14 @@ int Application::run()
     controller->moveToThread(thread);
     thread->start();
 
-    QSharedPointer<ImageSaver> imageSaver = QSharedPointer<ImageSaver>(new ImageSaver());
+    QSharedPointer<ImageServer> imageServer = QSharedPointer<ImageServer>(new ImageServer());
     thread = new QThread();
     Q_CHECK_PTR(thread);
     connect(controller.data(), &Controller::signalSaveImage,
-            imageSaver.data(), &ImageSaver::slotSave, Qt::QueuedConnection);
-    connect(imageSaver.data(), SIGNAL(destroyed()), thread, SLOT(quit()), Qt::QueuedConnection);
+            imageServer.data(), &ImageServer::slotSave, Qt::QueuedConnection);
+    connect(imageServer.data(), SIGNAL(destroyed()), thread, SLOT(quit()), Qt::QueuedConnection);
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()), Qt::QueuedConnection);
-    imageSaver->moveToThread(thread);
+    imageServer->moveToThread(thread);
     thread->start();
 
     return exec();

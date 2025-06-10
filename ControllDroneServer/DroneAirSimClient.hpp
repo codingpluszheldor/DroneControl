@@ -274,7 +274,7 @@ public:
     {
         _client.enableApiControl(true);
         const float duration = 1.0f;
-        const float yaw_rate = left ? 30.0f : -30.0f;
+        const float yaw_rate = left ? 2.0f : -2.0f;
 
         _client.rotateByYawRateAsync(yaw_rate, duration);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));
