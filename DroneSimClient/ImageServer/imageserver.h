@@ -6,10 +6,10 @@
 #include <QSharedPointer>
 #include "MjpegStreamer/mjpegstreamer.h"
 
-// --- Структуры форматов (для понимания) ---
+// --- Структуры форматов ---
 
 /*
- * КОНЦЕПЦИЯ ФОРМАТА JPEG (Joint Photographic Experts Group)
+ * ФОРМАТ JPEG (Joint Photographic Experts Group)
  * JPEG - это метод сжатия изображений с потерями. Файлы, использующие JPEG-сжатие,
  * обычно соответствуют стандартам JFIF или Exif.
  *
@@ -28,7 +28,7 @@
  */
 
 /*
- * КОНЦЕПЦИЯ ФОРМАТА MJPEG (Motion JPEG) для HTTP-потока
+ * ФОРМАТ MJPEG (Motion JPEG) для HTTP-потока
  * MJPEG - это серия отдельных JPEG-изображений, передаваемых как видеопоток.
  * Часто используется для HTTP-потока типа `multipart/x-mixed-replace`.
  *

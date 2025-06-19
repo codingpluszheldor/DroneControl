@@ -12,7 +12,9 @@
 ImageServer::ImageServer(QObject *parent)
     : QObject(parent)
 {
-    _mjpegStreamer = QSharedPointer<MjpegStreamer>(new MjpegStreamer(8000));
+    // Порт для видео сервера
+    const quint16 streamPort = 8000;
+    _mjpegStreamer = QSharedPointer<MjpegStreamer>(new MjpegStreamer(streamPort));
     connect(this, &ImageServer::signalShowImage, _mjpegStreamer.data(), &MjpegStreamer::slotNextFrame);
     _mjpegStreamer-> startServer();
 }
