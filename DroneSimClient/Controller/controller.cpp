@@ -1,10 +1,45 @@
 #include <QDateTime>
 #include <QtConcurrent>
+#include <iostream>
 #include <compat/nanomsg/nn.h>
 #include <compat/nanomsg/reqrep.h>
 #include <compat/nanomsg/pipeline.h>
+#include <asio.hpp>
+#include <nlohmann/json.hpp>
 #include "controller.h"
 
+using namespace std::literals::chrono_literals;
+using json = nlohmann::json;
+
+const uint8_t MAGIC[] = { 'V', '1' };
+const asio::ip::tcp::endpoint endpoint(asio::ip::make_address("192.168.255.12"), 10000);
+//const asio::ip::tcp::endpoint endpoint(asio::ip::make_address("127.0.0.1"), 9000);
+
+void sendFrame(const QByteArray &buffer, asio::ip::tcp::socket& socket)
+{
+    auto len_bytes = htonl(buffer.size());
+
+    // Отправка magic bytes, длина кадра и сам кадр
+    asio::write(socket, asio::buffer(MAGIC));
+    asio::write(socket, asio::buffer(&len_bytes, sizeof(uint32_t)));
+    asio::write(socket, asio::buffer(buffer.data(), buffer.size()));
+}
+
+std::pair<bool, json> receiveResponse(asio::ip::tcp::socket& socket)
+{
+    uint32_t response_length;
+    char raw_data[sizeof(response_length)];
+
+    // Чтение 4 bytes поля длины
+    asio::read(socket, asio::buffer(raw_data, sizeof(response_length)));
+    response_length = ntohl(*reinterpret_cast<const uint32_t*>(raw_data));
+
+    // Буфер под ответ JSON payload
+    std::vector<char> response_buffer(response_length);
+    asio::read(socket, asio::buffer(response_buffer.data(), response_length));
+
+    return {true, json::parse(response_buffer.begin(), response_buffer.end())};
+}
 
 Controller::Controller(QObject *parent)
     : QObject(parent)
@@ -194,6 +229,12 @@ void Controller::cameraImageLoop()
         qDebug() << "Ошибка set socket options";
     }
 
+    // ASIO io_context
+    asio::io_context ctx;
+    // Сокет на отправку в AI
+    asio::ip::tcp::socket socket(ctx);
+    socket.connect(endpoint);
+
     qDebug() << "Приём от камеры.........";
     while (_isStarted)
     {
@@ -202,8 +243,18 @@ void Controller::cameraImageLoop()
         if (bytes > 0) {
             if (_isStarted) {
                 QByteArray buffer(buf, bytes);
+
+                // В сокет AI
+                sendFrame(buffer, socket);
+                // Ожидание ответа от AI
+                auto [ok, polar_response] = receiveResponse(socket);
+                if (ok && !polar_response.empty()) {
+                    //std::cout << "Received polar coordinates: " << polar_response.dump(4) << "\n";
+                }
+
+                // В GUI
                 emit signalReceivedImageData(buffer);
-                // qDebug() << "Принято:" << buffer.size();
+                // В vlc stream
                 if (_save_images) {
                     emit signalSaveImage(buffer);
                 }

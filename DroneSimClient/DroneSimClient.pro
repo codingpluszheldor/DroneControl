@@ -35,6 +35,9 @@ win32 {
     INCLUDEPATH += $$PWD/../../../msys64/ucrt64/include
 
     LIBS += c:/msys64/ucrt64/lib/libnng.dll.a
+    LIBS += c:/Windows/System32/msvcrt.dll
+    LIBS += -lws2_32
+
 } unix {
     LIBS += -lnanomsg
 }

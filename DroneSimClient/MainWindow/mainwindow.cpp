@@ -48,10 +48,10 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         qDebug() << "Клавиша 'влево' нажата";
         emit signalKeyPressed(Qt::Key_Left);
     } else if(event->key() == Qt::Key_PageUp){
-        qDebug() << "Клавиша 'влево' нажата";
+        qDebug() << "Клавиша 'вверх' нажата";
         emit signalKeyPressed(Qt::Key_PageUp);
     } else if(event->key() == Qt::Key_PageDown){
-        qDebug() << "Клавиша 'влево' нажата";
+        qDebug() << "Клавиша 'вниз' нажата";
         emit signalKeyPressed(Qt::Key_PageDown);
     } else if(event->key() == Qt::Key_Insert){
         qDebug() << "Клавиша 'insert' нажата";
