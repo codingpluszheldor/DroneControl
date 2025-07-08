@@ -1,45 +1,9 @@
 #include <QDateTime>
 #include <QtConcurrent>
-#include <iostream>
 #include <compat/nanomsg/nn.h>
 #include <compat/nanomsg/reqrep.h>
 #include <compat/nanomsg/pipeline.h>
-#include <asio.hpp>
-#include <nlohmann/json.hpp>
 #include "controller.h"
-
-using namespace std::literals::chrono_literals;
-using json = nlohmann::json;
-
-const uint8_t MAGIC[] = { 'V', '1' };
-const asio::ip::tcp::endpoint endpoint(asio::ip::make_address("192.168.255.12"), 10000);
-//const asio::ip::tcp::endpoint endpoint(asio::ip::make_address("127.0.0.1"), 9000);
-
-void sendFrame(const QByteArray &buffer, asio::ip::tcp::socket& socket)
-{
-    auto len_bytes = htonl(buffer.size());
-
-    // Отправка magic bytes, длина кадра и сам кадр
-    asio::write(socket, asio::buffer(MAGIC));
-    asio::write(socket, asio::buffer(&len_bytes, sizeof(uint32_t)));
-    asio::write(socket, asio::buffer(buffer.data(), buffer.size()));
-}
-
-std::pair<bool, json> receiveResponse(asio::ip::tcp::socket& socket)
-{
-    uint32_t response_length;
-    char raw_data[sizeof(response_length)];
-
-    // Чтение 4 bytes поля длины
-    asio::read(socket, asio::buffer(raw_data, sizeof(response_length)));
-    response_length = ntohl(*reinterpret_cast<const uint32_t*>(raw_data));
-
-    // Буфер под ответ JSON payload
-    std::vector<char> response_buffer(response_length);
-    asio::read(socket, asio::buffer(response_buffer.data(), response_length));
-
-    return {true, json::parse(response_buffer.begin(), response_buffer.end())};
-}
 
 Controller::Controller(QObject *parent)
     : QObject(parent)
@@ -229,12 +193,6 @@ void Controller::cameraImageLoop()
         qDebug() << "Ошибка set socket options";
     }
 
-    // ASIO io_context
-    asio::io_context ctx;
-    // Сокет на отправку в AI
-    asio::ip::tcp::socket socket(ctx);
-    socket.connect(endpoint);
-
     qDebug() << "Приём от камеры.........";
     while (_isStarted)
     {
@@ -243,14 +201,6 @@ void Controller::cameraImageLoop()
         if (bytes > 0) {
             if (_isStarted) {
                 QByteArray buffer(buf, bytes);
-
-                // В сокет AI
-                sendFrame(buffer, socket);
-                // Ожидание ответа от AI
-                auto [ok, polar_response] = receiveResponse(socket);
-                if (ok && !polar_response.empty()) {
-                    //std::cout << "Received polar coordinates: " << polar_response.dump(4) << "\n";
-                }
 
                 // В GUI
                 emit signalReceivedImageData(buffer);
@@ -272,4 +222,49 @@ void Controller::slotSetSaveParams(const bool &save_images, const bool &save_sen
 {
     _save_images = save_images;
     _save_sensors_data = save_sensors_data;
+}
+
+void Controller::slotAiDataResponse(const QPoint &obj,
+                                    const QPoint &center,
+                                    const double &polar_r,
+                                    const double &polar_theta)
+{
+    qDebug() << "Коррекция на центр < > /\\ \\/....";
+
+    Q_UNUSED(polar_r);
+    Q_UNUSED(polar_theta);
+
+    constexpr int delta_x = 40;
+    constexpr int delta_y = 20;
+
+    int res_x = center.x() - obj.x();
+    int res_y = center.y() - obj.y();
+
+    if (std::abs(res_x) > delta_x) {
+        // Нужен корректирующий поворот
+        if (res_x < 0) {
+            // Объект слева, поворот влево
+            makeRequest(drone::DroneMethods::RotateLeft);
+            qDebug() << "<=== Влево, delta:" << std::abs(res_x);
+        } else if (res_x > 0) {
+            // Объект справа, поворот вправо
+            makeRequest(drone::DroneMethods::RotateRight);
+            qDebug() << "===> Вправо, delta:" << std::abs(res_x);
+        }
+    } else if (std::abs(res_y) > delta_y) {
+        // Нужен корректирующий спуск/подъём
+        if (res_y > 0) {
+            // Объект сверху, подъём
+            makeRequest(drone::DroneMethods::ToUp);
+            qDebug() << "/ \\";
+            qDebug() << " |";
+            qDebug() << " | Вверх";
+        } else if (res_y < 0) {
+            // Объект снизу, спуск
+            makeRequest(drone::DroneMethods::ToDown);
+            qDebug() << " |";
+            qDebug() << " |";
+            qDebug() << "\\ / Вниз";
+        }
+    }
 }

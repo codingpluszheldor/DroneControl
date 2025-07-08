@@ -4,6 +4,9 @@
 #include <QObject>
 #include <QString>
 #include <QSharedPointer>
+#include <QFuture>
+#include <QPoint>
+#include <atomic>
 #include "MjpegStreamer/mjpegstreamer.h"
 
 // --- Структуры форматов ---
@@ -65,12 +68,31 @@ class ImageServer : public QObject
 private:
     QString _fileImagesPath { "D:/Documents/AirSim/ClientRecording/image_" };
     QSharedPointer<MjpegStreamer> _mjpegStreamer;
+    std::atomic<bool> _isConnectedToAi {false};
+    std::atomic<bool> _isStarted {false};
+    QFuture<void> _futureConnect; // результат соединения
+    QFuture<void> _futureSendImage; // результат отправки изображения
+    QFuture<void> _futureResponse; // результат обработки изображения
 
 public:
     explicit ImageServer(QObject *parent = nullptr);
     ~ImageServer();
 
 private:
+    /// <summary>
+    /// Соединение с сервисом AI
+    /// </summary>
+    void connectToAi();
+
+    /// <summary>
+    /// Отправка изображения в сервис AI
+    /// </summary>
+    void sendImageToAi(const QByteArray &buffer);
+
+    /// <summary>
+    /// Приём ответов от AI
+    /// </summary>
+    void responseFromAi();
 
 public slots:
     /// <summary>
@@ -84,6 +106,14 @@ signals:
     /// Сигнал отправляет изображение для отображения
     /// </summary>
     void signalShowImage(const QByteArray &buffer);
+
+    /// <summary>
+    /// Сигнал отправляет данные от AI
+    /// </summary>
+    void signalAiDataResponse(const QPoint &obj,
+                              const QPoint &center,
+                              const double &polar_r,
+                              const double &polar_theta);
 };
 
 

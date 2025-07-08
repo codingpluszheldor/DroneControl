@@ -120,6 +120,14 @@ public slots:
     /// </summary>
     void slotSetSaveParams(const bool &save_images, const bool &save_sensors_data);
 
+    /// <summary>
+    /// Получение данных от AI
+    /// </summary>
+    void slotAiDataResponse(const QPoint &obj,
+                            const QPoint &center,
+                            const double &polar_r,
+                            const double &polar_theta);
+
 private slots:
     /// <summary>
     /// Обработка событый таймера

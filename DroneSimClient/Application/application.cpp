@@ -46,6 +46,8 @@ int Application::run()
     Q_CHECK_PTR(thread);
     connect(controller.data(), &Controller::signalSaveImage,
             imageServer.data(), &ImageServer::slotSave, Qt::QueuedConnection);
+    connect(imageServer.data(), &ImageServer::signalAiDataResponse,
+            controller.data(), &Controller::slotAiDataResponse, Qt::QueuedConnection);
     connect(imageServer.data(), SIGNAL(destroyed()), thread, SLOT(quit()), Qt::QueuedConnection);
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()), Qt::QueuedConnection);
     imageServer->moveToThread(thread);
