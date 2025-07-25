@@ -13,6 +13,7 @@ STRICT_MODE_ON
 #include "common/common_utils/FileSystem.hpp"
 #include <iostream>
 #include <chrono>
+#include <math.h>
 
 using namespace msr::airlib;
 
@@ -32,7 +33,7 @@ private:
     MultirotorRpcLibClient _client;
 
 public:
-    bool _yaw_is_rate = true;
+    bool _yaw_is_rate = false;
     float _yaw_or_rate = 0.0f; // угол рысканья
     float _speed = 5.0f; // скорость    
     DrivetrainType _drivetrain = DrivetrainType::ForwardOnly; // наклоном вперёд
@@ -111,11 +112,22 @@ public:
     }
 
     /// <summary>
-    /// Возвращает изображение с камеры Vas: пока только тест
+    /// Возвращает изображение с камеры
     /// </summary>
     const std::vector<ImageResponse> cameraImage(const std::string& camera_name_val)
     {
         const std::vector<ImageRequest> request{ ImageRequest(camera_name_val, ImageType::Scene, false, true) };
+        const std::vector<ImageResponse> response = _client.simGetImages(request);
+
+        return response;
+    }
+
+    /// <summary>
+    /// Возвращает значение глубины
+    /// </summary>
+    const std::vector<ImageResponse> cameraPixelsDepth(const std::string& camera_name_val)
+    {
+        const std::vector<ImageRequest> request{ ImageRequest(camera_name_val, ImageType::DepthPlanar, true, false) };
         const std::vector<ImageResponse> response = _client.simGetImages(request);
 
         return response;
@@ -158,7 +170,8 @@ public:
         const float size = 1.0f; // расстояние подъёма
         const float duration = size / _speed; // продолжительность манёвра
         // Установить угол рысканья
-        YawMode yaw_mode(_yaw_is_rate, _yaw_or_rate);
+        YawMode yaw_mode;
+        yaw_mode.setZeroRate(); 
 
         _client.moveByVelocityZAsync(0, 0, z - size, duration, _drivetrain, yaw_mode);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));
@@ -179,7 +192,8 @@ public:
         const float size = 1.0f; // расстояние опускания
         const float duration = size / _speed; // продолжительность манёвра
         // Установить угол рысканья
-        YawMode yaw_mode(_yaw_is_rate, _yaw_or_rate);
+        YawMode yaw_mode;
+        yaw_mode.setZeroRate();
 
         _client.moveByVelocityZAsync(0, 0, z + size, duration, _drivetrain, yaw_mode);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));
@@ -199,7 +213,14 @@ public:
         const float size = 1.0f; // расстояние 
         const float duration = size / _speed; // продолжительность манёвра
         // Установить угол рысканья
-        YawMode yaw_mode(_yaw_is_rate, _yaw_or_rate);
+        YawMode yaw_mode;
+        if (_drivetrain == DrivetrainType::ForwardOnly) {
+            yaw_mode.is_rate = false;
+            yaw_mode.yaw_or_rate = 0;
+        }
+        else {
+            yaw_mode.setZeroRate();
+        }
 
         _client.moveByVelocityZAsync(_speed, 0, z, duration, _drivetrain, yaw_mode);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));
@@ -219,7 +240,14 @@ public:
         const float size = 1.0f; // расстояние
         const float duration = size / _speed; // продолжительность манёвра
         // Установить угол рысканья
-        YawMode yaw_mode(_yaw_is_rate, _yaw_or_rate);
+        YawMode yaw_mode;
+        if (_drivetrain == DrivetrainType::ForwardOnly) {
+            yaw_mode.is_rate = false;
+            yaw_mode.yaw_or_rate = 0;
+        }
+        else {
+            yaw_mode.setZeroRate();
+        }
 
         _client.moveByVelocityZAsync(0, _speed, z, duration, _drivetrain, yaw_mode);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));
@@ -239,7 +267,14 @@ public:
         const float size = 1.0f; // расстояние
         const float duration = size / _speed; // продолжительность манёвра
         // Установить угол рысканья
-        YawMode yaw_mode(_yaw_is_rate, _yaw_or_rate);
+        YawMode yaw_mode;
+        if (_drivetrain == DrivetrainType::ForwardOnly) {
+            yaw_mode.is_rate = false;
+            yaw_mode.yaw_or_rate = 0;
+        }
+        else {
+            yaw_mode.setZeroRate();
+        }
 
         _client.moveByVelocityZAsync(0, -_speed, z, duration, _drivetrain, yaw_mode);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));
@@ -259,7 +294,14 @@ public:
         const float size = 1.0f; // расстояние
         const float duration = size / _speed; // продолжительность манёвра
         // Установить угол рысканья
-        YawMode yaw_mode(_yaw_is_rate, _yaw_or_rate);
+        YawMode yaw_mode;
+        if (_drivetrain == DrivetrainType::ForwardOnly) {
+            yaw_mode.is_rate = false;
+            yaw_mode.yaw_or_rate = 0;
+        }
+        else {
+            yaw_mode.setZeroRate();
+        }
 
         _client.moveByVelocityZAsync(-_speed, 0, z, duration, _drivetrain, yaw_mode);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));
@@ -274,7 +316,10 @@ public:
     {
         _client.enableApiControl(true);
         const float duration = 1.0f;
-        const float yaw_rate = left ? 2.0f : -2.0f;
+        float yaw_rate = left ? 4.0f : -4.0f;
+        if (_yaw_is_rate) {
+            yaw_rate = left ? _yaw_or_rate : -_yaw_or_rate;
+        }
 
         _client.rotateByYawRateAsync(yaw_rate, duration);
         std::this_thread::sleep_for(std::chrono::duration<double>(duration));
@@ -282,7 +327,60 @@ public:
         _client.hoverAsync()->waitOnLastTask();
     }
 
+    /// <summary>
+    /// Расчёт расстояния от дрона до объекта на кадре
+    /// </summary>
+    double calculateDistanceToObject(const std::string& camera_name_val, 
+                                     const std::pair<float, float> &object_center_pixel)
+    {
+        struct CameraIntrinsicMatrix
+        {
+            float fx; // фокусное расстояние по оси x
+            float fy; // фокусное расстояние по оси y
+            float cx; // смещение по оси x
+            float cy; // смещение по оси y
+        };
+
+        // Получаем состояние дрона
+        MultirotorState rotor_state = _client.getMultirotorState();
+        Vector3r drone_position = rotor_state.getPosition();
+
+        // Значение глубины (заменяется глубиной из сенсора)
+        float pixel_depth = 10.0; // виртуальное значение глубины из карты
+        const std::vector<ImageResponse> img_response = cameraPixelsDepth(camera_name_val);
+        for (const ImageResponse& image_info : img_response) {
+            const float *depth = reinterpret_cast<const float*>(image_info.image_data_float.data());
+            pixel_depth = *(depth + 640 * 360);
+        }
+
+        // Внутренняя матрица камеры
+        CameraIntrinsicMatrix camera_matrix = {
+           1280, // Фокусное расстояние по горизонтали
+            720, // Фокусное расстояние по вертикали
+            640, // Центр по оси x
+            360  // Центр по оси y
+        };
+
+        //
+        // Рассчитываем расстояние
+        float centerX = object_center_pixel.first;
+        float centerY = object_center_pixel.second;
+
+        // Мировые координаты объекта
+        double Xw = (centerX - camera_matrix.cx) / camera_matrix.fx * pixel_depth + drone_position.x();
+        double Yw = (centerY - camera_matrix.cy) / camera_matrix.fy * pixel_depth + drone_position.y();
+        double Zw = pixel_depth + drone_position.z(); // считаем, что камера смотрит вперед
+
+        // Расстояние от дрона до объекта
+        double distance = std::sqrt(std::pow(Xw - drone_position.x(), 2) +
+                                    std::pow(Yw - drone_position.y(), 2) +
+                                    std::pow(Zw - drone_position.z(), 2));
+
+        return distance;
+    }
+
     };
+
 }
 
 #endif

@@ -125,6 +125,7 @@ public slots:
     /// </summary>
     void slotAiDataResponse(const QPoint &obj,
                             const QPoint &center,
+                            const QSize  &size,
                             const double &polar_r,
                             const double &polar_theta);
 

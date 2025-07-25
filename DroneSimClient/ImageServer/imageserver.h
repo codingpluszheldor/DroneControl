@@ -6,6 +6,7 @@
 #include <QSharedPointer>
 #include <QFuture>
 #include <QPoint>
+#include <QSize>
 #include <atomic>
 #include "MjpegStreamer/mjpegstreamer.h"
 
@@ -112,6 +113,7 @@ signals:
     /// </summary>
     void signalAiDataResponse(const QPoint &obj,
                               const QPoint &center,
+                              const QSize  &size,
                               const double &polar_r,
                               const double &polar_theta);
 };

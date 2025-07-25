@@ -139,8 +139,8 @@ void ImageServer::responseFromAi()
         // Ожидание ответа от AI
         auto [ok, data] = receiveResponse(*socketAsio);
         if (ok && !data.empty()) {
-            // int width = data["image_size"]["width_px"];
-            // int height = data["image_size"]["height_px"];
+            int width = data["image_size"]["width_px"];
+            int height = data["image_size"]["height_px"];
             double center_x = data["center_px"]["x"];
             double center_y = data["center_px"]["y"];
             double object_x = data["object_px"]["x"];
@@ -151,6 +151,7 @@ void ImageServer::responseFromAi()
             qDebug() << "Ответ от AI";
             emit signalAiDataResponse(QPoint(object_x, object_y),
                                       QPoint(center_x, center_y),
+                                      QSize(width, height),
                                       polar_r,
                                       polar_theta);
         }

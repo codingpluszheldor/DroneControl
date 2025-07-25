@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Параметры по умолчанию
     sbSpeed->setValue(5.0);
-    rbYaw->setChecked(true);
+    rbYaw->setChecked(false);
     sbYaw->setValue(0.0);
     cBoxDrivetrainType->setCurrentIndex(1);
 

@@ -226,10 +226,11 @@ void Controller::slotSetSaveParams(const bool &save_images, const bool &save_sen
 
 void Controller::slotAiDataResponse(const QPoint &obj,
                                     const QPoint &center,
+                                    const QSize  &size,
                                     const double &polar_r,
                                     const double &polar_theta)
 {
-    qDebug() << "Коррекция на центр < > /\\ \\/....";
+    qDebug() << "Коррекция на центр < > /\\ \\/...., размер:" << size;
 
     Q_UNUSED(polar_r);
     Q_UNUSED(polar_theta);
@@ -242,6 +243,8 @@ void Controller::slotAiDataResponse(const QPoint &obj,
 
     if (std::abs(res_x) > delta_x) {
         // Нужен корректирующий поворот
+        _yaw_is_rate = true;
+        std::abs(res_x) > (delta_x * 3) ? _yaw_or_rate = 10.0f : _yaw_or_rate = 4.0f;
         if (res_x < 0) {
             // Объект слева, поворот влево
             makeRequest(drone::DroneMethods::RotateLeft);
