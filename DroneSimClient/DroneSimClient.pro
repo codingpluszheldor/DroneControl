@@ -41,3 +41,5 @@ win32 {
 } unix {
     LIBS += -lnanomsg
 }
+
+#DEFINES += SAVE_IMAGES

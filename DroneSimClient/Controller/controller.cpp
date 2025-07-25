@@ -236,7 +236,7 @@ void Controller::slotAiDataResponse(const QPoint &obj,
     Q_UNUSED(polar_theta);
 
     constexpr int delta_x = 40;
-    constexpr int delta_y = 20;
+    constexpr int delta_y = 40;
 
     int res_x = center.x() - obj.x();
     int res_y = center.y() - obj.y();
@@ -244,7 +244,7 @@ void Controller::slotAiDataResponse(const QPoint &obj,
     if (std::abs(res_x) > delta_x) {
         // Нужен корректирующий поворот
         _yaw_is_rate = true;
-        std::abs(res_x) > (delta_x * 3) ? _yaw_or_rate = 10.0f : _yaw_or_rate = 4.0f;
+        std::abs(res_x) > (delta_x * 3) ? _yaw_or_rate = 6.0f : _yaw_or_rate = 2.0f;
         if (res_x < 0) {
             // Объект слева, поворот влево
             makeRequest(drone::DroneMethods::RotateLeft);

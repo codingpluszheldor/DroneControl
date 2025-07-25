@@ -167,7 +167,7 @@ public:
 
         auto position = _client.getMultirotorState().getPosition();
         float z = position.z(); // current position (NED coordinate system).        
-        const float size = 1.0f; // расстояние подъёма
+        const float size = 2.0f; // расстояние подъёма
         const float duration = size / _speed; // продолжительность манёвра
         // Установить угол рысканья
         YawMode yaw_mode;
@@ -189,7 +189,7 @@ public:
 
         auto position = _client.getMultirotorState().getPosition();
         float z = position.z(); // current position (NED coordinate system).
-        const float size = 1.0f; // расстояние опускания
+        const float size = 2.0f; // расстояние опускания
         const float duration = size / _speed; // продолжительность манёвра
         // Установить угол рысканья
         YawMode yaw_mode;
