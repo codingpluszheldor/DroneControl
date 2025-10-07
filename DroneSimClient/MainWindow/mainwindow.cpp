@@ -77,12 +77,24 @@ void MainWindow::slotTimeOut()
         camera = DroneCamera::back_center;
     }
 
+    DroneImageType image_type = DroneImageType::Scene;
+    if (rbRGB->isChecked()) {
+        image_type = DroneImageType::Scene;
+    } else if (rbDepthPlanar->isChecked()) {
+        image_type = DroneImageType::DepthPlanar;
+    } else if (rbDepthPerspective->isChecked()) {
+        image_type = DroneImageType::DepthPerspective;
+    } else if (rbSegmentation->isChecked()) {
+        image_type = DroneImageType::Segmentation;
+    }
+
     emit signalSetParams(rbYaw->isChecked(),
                          sbYaw->value(),
                          sbSpeed->value(),
                          cBoxDrivetrainType->currentIndex(),
                          cBoxGetImage->isChecked(),
-                         static_cast<int>(camera));
+                         static_cast<int>(camera),
+                         static_cast<int>(image_type));
 }
 
 void MainWindow::setController(Controller *controller)

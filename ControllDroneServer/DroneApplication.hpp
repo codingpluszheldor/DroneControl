@@ -65,6 +65,7 @@ private:
     std::atomic<bool> _get_image{ false };
     std::atomic<bool> _running{ true };
     std::string _camera_name_val = "front-center";
+    ImageCaptureBase::ImageType _camera_img_type = ImageType::Scene;
 
 public:
     /// <summary>
@@ -212,7 +213,7 @@ public:
             try {
                 if (_get_image) {
                     //std::cout << "Запрос изображения от камеры... " << '\n';
-                    const std::vector<ImageResponse> img_response = _client.cameraImage(_camera_name_val);
+                    const std::vector<ImageResponse> img_response = _client.cameraImage(_camera_name_val, _camera_img_type);                    
                     for (const ImageResponse& image_info : img_response) {
                         int send_result = nn_send(_client_sock,
                                                   reinterpret_cast<const char*>(image_info.image_data_uint8.data()),
@@ -267,6 +268,7 @@ public:
                     _get_image = request->get_camera_image;
                     if (_get_image) {
                         _camera_name_val = map_cameras[request->camera];
+                        _camera_img_type = cameraImageType(request->camera_image_type);
                         std::cout << "Камера включена !!!" << '\n';
                     }
                     else {
@@ -359,6 +361,25 @@ private:
         _response = std::vector<std::byte>(reinterpret_cast<const std::byte*>(reply),
                                            reinterpret_cast<const std::byte*>(reply + sizeof(DroneReply)));
         delete reply;
+    }
+
+    /// <summary>
+    /// Возвращает тип изображения камеры
+    /// </summary>
+    ImageCaptureBase::ImageType cameraImageType(const DroneImageType type)
+    {
+        switch (type) {
+        case DroneImageType::Scene:
+            return ImageType::Scene;
+        case DroneImageType::DepthPlanar:
+            return ImageType::DepthPlanar;
+        case DroneImageType::DepthPerspective:
+            return ImageType::DepthPerspective;
+        case DroneImageType::Segmentation:
+            return ImageType::Segmentation;
+        default:
+            return ImageType::Scene;
+        }
     }
 };
 

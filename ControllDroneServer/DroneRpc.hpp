@@ -64,6 +64,17 @@ enum class DroneCamera : int
     back_center
 };
 
+/// <summary>
+/// Тип изображения с камеры
+/// </summary>
+enum class DroneImageType : int
+{ 
+    Scene = 0,
+    DepthPlanar,
+    DepthPerspective,
+    Segmentation
+};
+
 static std::map<DroneCamera, std::string> map_cameras = {
     { DroneCamera::front_center, "front-center" },
     { DroneCamera::front_right,  "front-right"  },
@@ -86,6 +97,7 @@ struct DroneMethodReq
     int drivetrain = 1; // DrivetrainType::ForwardOnly;
     bool get_camera_image = false;
     DroneCamera camera = DroneCamera::front_center;
+    DroneImageType camera_image_type = DroneImageType::Scene;
 };
 #pragma pack(pop)
 

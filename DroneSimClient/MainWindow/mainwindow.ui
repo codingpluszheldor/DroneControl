@@ -7,14 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>1233</width>
-    <height>872</height>
+    <height>946</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Управление дроном</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_18">
+   <layout class="QVBoxLayout" name="verticalLayout_21">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
@@ -35,14 +35,14 @@
             <widget class="QPushButton" name="pBtnConnect">
              <property name="minimumSize">
               <size>
-               <width>150</width>
-               <height>50</height>
+               <width>120</width>
+               <height>30</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>150</width>
-               <height>50</height>
+               <width>120</width>
+               <height>30</height>
               </size>
              </property>
              <property name="text">
@@ -54,14 +54,14 @@
             <widget class="QPushButton" name="pBtnArm">
              <property name="minimumSize">
               <size>
-               <width>150</width>
-               <height>50</height>
+               <width>120</width>
+               <height>30</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>150</width>
-               <height>50</height>
+               <width>120</width>
+               <height>30</height>
               </size>
              </property>
              <property name="text">
@@ -73,14 +73,14 @@
             <widget class="QPushButton" name="pBtnTakeOff">
              <property name="minimumSize">
               <size>
-               <width>150</width>
-               <height>50</height>
+               <width>120</width>
+               <height>30</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>150</width>
-               <height>50</height>
+               <width>120</width>
+               <height>30</height>
               </size>
              </property>
              <property name="text">
@@ -92,14 +92,14 @@
             <widget class="QPushButton" name="pBtnTestBox">
              <property name="minimumSize">
               <size>
-               <width>150</width>
-               <height>50</height>
+               <width>120</width>
+               <height>30</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>150</width>
-               <height>50</height>
+               <width>120</width>
+               <height>30</height>
               </size>
              </property>
              <property name="text">
@@ -145,14 +145,14 @@
               <widget class="QPushButton" name="pBtnLeft">
                <property name="minimumSize">
                 <size>
-                 <width>150</width>
-                 <height>50</height>
+                 <width>120</width>
+                 <height>30</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>150</width>
-                 <height>50</height>
+                 <width>120</width>
+                 <height>30</height>
                 </size>
                </property>
                <property name="text">
@@ -181,14 +181,14 @@
               <widget class="QPushButton" name="pBtnForward">
                <property name="minimumSize">
                 <size>
-                 <width>150</width>
-                 <height>50</height>
+                 <width>120</width>
+                 <height>30</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>150</width>
-                 <height>50</height>
+                 <width>120</width>
+                 <height>30</height>
                 </size>
                </property>
                <property name="text">
@@ -276,14 +276,14 @@
               <widget class="QPushButton" name="pBtnBack">
                <property name="minimumSize">
                 <size>
-                 <width>150</width>
-                 <height>50</height>
+                 <width>120</width>
+                 <height>30</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>150</width>
-                 <height>50</height>
+                 <width>120</width>
+                 <height>30</height>
                 </size>
                </property>
                <property name="text">
@@ -312,14 +312,14 @@
               <widget class="QPushButton" name="pBtnRight">
                <property name="minimumSize">
                 <size>
-                 <width>150</width>
-                 <height>50</height>
+                 <width>120</width>
+                 <height>30</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>150</width>
-                 <height>50</height>
+                 <width>120</width>
+                 <height>30</height>
                 </size>
                </property>
                <property name="text">
@@ -350,14 +350,14 @@
             <widget class="QPushButton" name="pBtnUp">
              <property name="minimumSize">
               <size>
-               <width>150</width>
-               <height>50</height>
+               <width>120</width>
+               <height>30</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>150</width>
-               <height>50</height>
+               <width>120</width>
+               <height>30</height>
               </size>
              </property>
              <property name="text">
@@ -382,14 +382,14 @@
             <widget class="QPushButton" name="pBtnDown">
              <property name="minimumSize">
               <size>
-               <width>150</width>
-               <height>50</height>
+               <width>120</width>
+               <height>30</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>150</width>
-               <height>50</height>
+               <width>120</width>
+               <height>30</height>
               </size>
              </property>
              <property name="text">
@@ -414,14 +414,14 @@
             <widget class="QPushButton" name="pBtnLanding">
              <property name="minimumSize">
               <size>
-               <width>150</width>
-               <height>50</height>
+               <width>120</width>
+               <height>30</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>150</width>
-               <height>50</height>
+               <width>120</width>
+               <height>30</height>
               </size>
              </property>
              <property name="text">
@@ -433,14 +433,14 @@
             <widget class="QPushButton" name="pBtnDisArm">
              <property name="minimumSize">
               <size>
-               <width>150</width>
-               <height>50</height>
+               <width>120</width>
+               <height>30</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>150</width>
-               <height>50</height>
+               <width>120</width>
+               <height>30</height>
               </size>
              </property>
              <property name="text">
@@ -800,7 +800,7 @@
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_9">
+     <layout class="QHBoxLayout" name="horizontalLayout_8">
       <item>
        <widget class="QGroupBox" name="groupBox_4">
         <property name="maximumSize">
@@ -812,7 +812,7 @@
         <property name="title">
          <string>Логирование</string>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_9">
+        <layout class="QVBoxLayout" name="verticalLayout_19">
          <item>
           <widget class="QTextEdit" name="teLog"/>
          </item>
@@ -820,63 +820,135 @@
        </widget>
       </item>
       <item>
-       <widget class="QGroupBox" name="groupBox_10">
+       <widget class="QGroupBox" name="groupBox_14">
         <property name="title">
          <string>Камера</string>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_17">
+        <layout class="QVBoxLayout" name="verticalLayout_18">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_8">
-           <item>
-            <widget class="QCheckBox" name="cBoxGetImage">
-             <property name="text">
-              <string>Запрос изображения</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="rbFrontLeft">
-             <property name="text">
-              <string>front-left</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="rbFrontCenter">
-             <property name="text">
-              <string>front-center</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="rbFrontRight">
-             <property name="text">
-              <string>front-right</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="rbFpv">
-             <property name="text">
-              <string>fpv</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="rbBackCenter">
-             <property name="text">
-              <string>back-center</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <widget class="QCheckBox" name="cBoxGetImage">
+           <property name="text">
+            <string>Запрос изображения</string>
+           </property>
+          </widget>
          </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_12">
+           <property name="title">
+            <string>Направление</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_9">
+            <item>
+             <widget class="QRadioButton" name="rbFrontLeft">
+              <property name="text">
+               <string>front-left</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbFrontCenter">
+              <property name="text">
+               <string>front-center</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbFrontRight">
+              <property name="text">
+               <string>front-right</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbFpv">
+              <property name="text">
+               <string>fpv</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbBackCenter">
+              <property name="text">
+               <string>back-center</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_13">
+           <property name="title">
+            <string>Типы изображений</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_17">
+            <item>
+             <widget class="QRadioButton" name="rbRGB">
+              <property name="text">
+               <string>RGB</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbDepthPlanar">
+              <property name="text">
+               <string>Depth Planar</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbDepthPerspective">
+              <property name="minimumSize">
+               <size>
+                <width>109</width>
+                <height>17</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Depth Perspective</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rbSegmentation">
+              <property name="minimumSize">
+               <size>
+                <width>89</width>
+                <height>17</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Segmentation</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_10">
+        <property name="title">
+         <string>Видео с дрона</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_20">
          <item>
           <widget class="QLabel" name="labelImage">
            <property name="minimumSize">
+            <size>
+             <width>640</width>
+             <height>360</height>
+            </size>
+           </property>
+           <property name="maximumSize">
             <size>
              <width>640</width>
              <height>360</height>

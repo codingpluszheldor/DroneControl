@@ -91,7 +91,8 @@ signals:
                          const float &speed,
                          const int &drivetrain,
                          const bool &get_image,
-                         const int &camera);
+                         const int &camera,
+                         const int &image_type);
 
     /// <summary>
     /// Установка параметров сохранения

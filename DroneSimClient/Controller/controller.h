@@ -60,6 +60,7 @@ private:
     int _drivetrain = 1;
     bool _get_image = false;
     DroneCamera _camera = DroneCamera::front_center;
+    DroneImageType _image_type = DroneImageType::Scene;
     // Сохранеие  данных с дрона
     bool _save_images = false;
     bool _save_sensors_data = false;    
@@ -113,7 +114,8 @@ public slots:
                        const float &speed,
                        const int &drivetrain,
                        const bool &get_image,
-                       const int &camera);
+                       const int &camera,
+                       const int &image_type);
 
     /// <summary>
     /// Установка параметров сохранения
