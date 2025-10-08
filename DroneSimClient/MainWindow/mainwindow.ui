@@ -876,6 +876,13 @@
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QRadioButton" name="rbStereo">
+              <property name="text">
+               <string>stereo</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>

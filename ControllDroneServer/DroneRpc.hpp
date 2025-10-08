@@ -61,7 +61,8 @@ enum class DroneCamera : int
     front_right,
     front_left,
     fpv,
-    back_center
+    back_center,
+    stereo
 };
 
 /// <summary>
@@ -80,7 +81,8 @@ static std::map<DroneCamera, std::string> map_cameras = {
     { DroneCamera::front_right,  "front-right"  },
     { DroneCamera::front_left,   "front-left"   },
     { DroneCamera::fpv,          "fpv"          },
-    { DroneCamera::back_center,  "back-center"  }
+    { DroneCamera::back_center,  "back-center"  },
+    { DroneCamera::stereo,       "stereo"       }
 };
 
 /// <summary>

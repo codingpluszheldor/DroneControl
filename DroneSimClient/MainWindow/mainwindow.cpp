@@ -75,6 +75,8 @@ void MainWindow::slotTimeOut()
         camera = DroneCamera::fpv;
     } else if (rbBackCenter->isChecked()) {
         camera = DroneCamera::back_center;
+    } else if (rbStereo->isChecked()) {
+        camera = DroneCamera::stereo;
     }
 
     DroneImageType image_type = DroneImageType::Scene;

@@ -213,19 +213,40 @@ public:
             try {
                 if (_get_image) {
                     //std::cout << "Запрос изображения от камеры... " << '\n';
-                    const std::vector<ImageResponse> img_response = _client.cameraImage(_camera_name_val, _camera_img_type);                    
-                    for (const ImageResponse& image_info : img_response) {
-                        int send_result = nn_send(_client_sock,
-                                                  reinterpret_cast<const char*>(image_info.image_data_uint8.data()),
-                                                  image_info.image_data_uint8.size(),
-                                                  0);
-                        //std::cout << "Отравлено от камеры, размер: " << image_info.image_data_uint8.size() << '\n';
-                        if (send_result < 0) {
-                            std::cerr << "Ошибка отправки данных с камеры в сокет\n";
-                        }                        
+                    if (_camera_name_val != "stereo") {
+                        const std::vector<ImageResponse> img_response = _client.cameraImage(_camera_name_val, _camera_img_type);
+                        for (const ImageResponse& image_info : img_response) {
+                            int send_result = nn_send(_client_sock,
+                                                      reinterpret_cast<const char*>(image_info.image_data_uint8.data()),
+                                                      image_info.image_data_uint8.size(),
+                                                      0);
+                            //std::cout << "Отравлено от камеры, размер: " << image_info.image_data_uint8.size() << '\n';
+                            if (send_result < 0) {
+                                std::cerr << "Ошибка отправки данных с камеры в сокет\n";
+                            }
+                        }
+                        //std::this_thread::sleep_for(std::chrono::duration<double>(delay));
+                        std::this_thread::sleep_for(15ms);
                     }
-                    //std::this_thread::sleep_for(std::chrono::duration<double>(delay));
-                    std::this_thread::sleep_for(15ms);
+                    else {
+                        const std::vector<ImageResponse> img_response_left = _client.cameraImage(map_cameras[DroneCamera::front_left], _camera_img_type);
+                        for (const ImageResponse& image_info : img_response_left) {
+                            std::string path = "D:\\Documents\\AirSim\\StereoRecordings\\Left";
+                            std::string file_path = FileSystem::combine(path, std::to_string(image_info.time_stamp));
+                            std::ofstream file(file_path + ".png", std::ios::binary);
+                            file.write(reinterpret_cast<const char*>(image_info.image_data_uint8.data()), image_info.image_data_uint8.size());
+                            file.close();
+                        }
+
+                        const std::vector<ImageResponse> img_response_right = _client.cameraImage(map_cameras[DroneCamera::front_right], _camera_img_type);
+                        for (const ImageResponse& image_info : img_response_right) {
+                            std::string path = "D:\\Documents\\AirSim\\StereoRecordings\\Right";
+                            std::string file_path = FileSystem::combine(path, std::to_string(image_info.time_stamp));
+                            std::ofstream file(file_path + ".png", std::ios::binary);
+                            file.write(reinterpret_cast<const char*>(image_info.image_data_uint8.data()), image_info.image_data_uint8.size());
+                            file.close();
+                        }
+                    }
 
                     // VAS: test to files
                     //for (const ImageResponse& image_info : img_response) {
