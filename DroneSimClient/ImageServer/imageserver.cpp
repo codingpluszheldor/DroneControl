@@ -7,6 +7,7 @@
 #include <QPixmap>
 #include <QTemporaryFile>
 #include <QtConcurrent>
+#include <QPainter>
 #include <asio.hpp>
 #include <nlohmann/json.hpp>
 #include "imageserver.h"
@@ -20,8 +21,51 @@ asio::io_context ctxAsio;
 asio::ip::tcp::socket *socketAsio = nullptr;
 
 const uint8_t MAGIC[] = { 'V', '1' };
-const asio::ip::tcp::endpoint endpoint(asio::ip::make_address("192.168.255.12"), 10000);
-//const asio::ip::tcp::endpoint endpoint(asio::ip::make_address("127.0.0.1"), 10000);
+//const asio::ip::tcp::endpoint endpoint(asio::ip::make_address("192.168.255.12"), 10000);
+const asio::ip::tcp::endpoint endpoint(asio::ip::make_address("127.0.0.1"), 10000);
+
+QByteArray createImageWithText(const QByteArray &imageData, const QString &text)
+{
+    QPixmap originalPixmap;
+    if (!originalPixmap.loadFromData(imageData, "JPEG")) {
+        return QByteArray();
+    }
+
+    // Создаем новое изображение такого же размера
+    QPixmap resultPixmap(originalPixmap.size());
+    resultPixmap.fill(Qt::transparent);
+
+    QPainter painter(&resultPixmap);
+
+    // исходное изображение
+    painter.drawPixmap(0, 0, originalPixmap);
+
+    // шрифт
+    QFont font = painter.font();
+    font.setPointSize(32);
+    font.setBold(true);
+    painter.setFont(font);
+
+    // Настраиваем цвет текста
+    painter.setPen(Qt::white);
+
+    // Добавляем тень для лучшей читаемости
+    painter.setPen(QPen(Qt::black, 2));
+    painter.drawText(resultPixmap.rect().adjusted(2, 2, 2, 2), Qt::AlignBottom | Qt::AlignRight, text);
+
+    painter.setPen(Qt::white);
+    painter.drawText(resultPixmap.rect(), Qt::AlignBottom | Qt::AlignRight, text);
+
+    painter.end();
+
+    // обратно в QByteArray
+    QByteArray resultData;
+    QBuffer buffer(&resultData);
+    buffer.open(QIODevice::WriteOnly);
+    resultPixmap.save(&buffer, "JPEG", 85); // 85 - качество JPEG
+
+    return resultData;
+}
 
 void sendFrame(const QByteArray &buffer, asio::ip::tcp::socket &socket)
 {
@@ -103,7 +147,8 @@ void ImageServer::slotSave(const QByteArray &buffer)
     }
 
     // Отправка кадра в видео поток
-    emit signalShowImage(baJpeg);
+    // emit signalShowImage(baJpeg);
+    emit signalShowImage(createImageWithText(baJpeg, _textAiData));
 
 #ifdef SAVE_IMAGES
     QFile file(_fileImagesPath + QString::number(QDateTime::currentMSecsSinceEpoch()) + ".jpg");
@@ -154,6 +199,12 @@ void ImageServer::responseFromAi()
                                       QSize(width, height),
                                       polar_r,
                                       polar_theta);
+
+            _textAiData = QString("obj_x: %1, obj_y: %2, polar_r: %3, polar_theta: %4")
+                            .arg((int)object_x)
+                            .arg((int)object_y)
+                            .arg((int)polar_r)
+                            .arg((int)polar_theta);
         }
     }
 }

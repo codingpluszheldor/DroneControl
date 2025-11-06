@@ -68,6 +68,7 @@ class ImageServer : public QObject
 
 private:
     QString _fileImagesPath { "D:/Documents/AirSim/ClientRecording/image_" };
+    QString _textAiData;
     QSharedPointer<MjpegStreamer> _mjpegStreamer;
     std::atomic<bool> _isConnectedToAi {false};
     std::atomic<bool> _isStarted {false};

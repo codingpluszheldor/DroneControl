@@ -9,6 +9,7 @@
 #include <QQueue>
 #include <QTimer>
 #include <QFuture>
+#include <QMutex>
 #include <QSharedPointer>
 #include "../ControllDroneServer/DroneRpc.hpp"
 
@@ -28,6 +29,7 @@ private:
     QString _requestText;
     QString _replyText;
     QQueue<drone::DroneMethodReq*> _cmqQueue;
+    QMutex _mutex;
     drone::DroneMethods _lastCmd = drone::DroneMethods::Wait;
     QMap<drone::DroneMethods, QString> _methodNames = {
         {drone::DroneMethods::Connection, "Connection"},
@@ -56,8 +58,9 @@ private:
     // Параметры запроса из Ui
     bool _yaw_is_rate = true;
     float _yaw_or_rate = 0.0f; // угол рысканья
-    float _speed = 5.0f; // скорость
-    int _drivetrain = 1;
+    // TODO: sync with Ui
+    float _speed = 2.0f; // // Скорость м/c
+    int _drivetrain = 1; // 0 - MaxDeegreeOfFreedom, 1 - ForwardOnly
     bool _get_image = false;
     DroneCamera _camera = DroneCamera::front_center;
     DroneImageType _image_type = DroneImageType::Scene;
@@ -79,7 +82,7 @@ private:
     /// <summary>
     /// Создание структуры запроса к дрону и постановка в очередь
     /// </summary>
-    void makeRequest(const drone::DroneMethods &method);
+    void makeRequest(const drone::DroneMethods &method, const bool ai = false);
 
     /// <summary>
     /// Отправка запроса и удаление из очереди

@@ -1,5 +1,6 @@
 #include <QDateTime>
 #include <QtConcurrent>
+#include <QMutexLocker>
 #include <compat/nanomsg/nn.h>
 #include <compat/nanomsg/reqrep.h>
 #include <compat/nanomsg/pipeline.h>
@@ -85,8 +86,10 @@ bool Controller::sendRequest(drone::DroneMethodReq *request)
     return true;
 }
 
-void Controller::makeRequest(const drone::DroneMethods &method)
+void Controller::makeRequest(const drone::DroneMethods &method, const bool ai)
 {
+    QMutexLocker locker(&_mutex);
+
     drone::DroneMethodReq *request = new drone::DroneMethodReq;
     request->method = method;
     request->speed = _speed;
@@ -98,6 +101,17 @@ void Controller::makeRequest(const drone::DroneMethods &method)
     request->camera = _camera;
     request->camera_image_type = _image_type;
 
+    // if (ai) {
+    //     _cmqQueue.append(request);
+    // } else {
+    //     if (_lastCmd != method) {
+    //         while (!_cmqQueue.isEmpty()) {
+    //             delete _cmqQueue.dequeue();
+    //         }
+    //         _cmqQueue.append(request);
+    //     }
+    // }
+
     if (_lastCmd != method) {
         while (!_cmqQueue.isEmpty()) {
             delete _cmqQueue.dequeue();
@@ -108,6 +122,8 @@ void Controller::makeRequest(const drone::DroneMethods &method)
 
 void Controller::slotTimeOut()
 {
+    QMutexLocker locker(&_mutex);
+
     if (_cmqQueue.isEmpty()) {
         return;
     }
@@ -238,39 +254,55 @@ void Controller::slotAiDataResponse(const QPoint &obj,
     Q_UNUSED(polar_r);
     Q_UNUSED(polar_theta);
 
-    constexpr int delta_x = 40;
-    constexpr int delta_y = 40;
+    constexpr int delta_x = 100;
+    constexpr int delta_y = 100;
 
     int res_x = center.x() - obj.x();
-    int res_y = center.y() - obj.y();
+    int res_y = center.y() - (obj.y() - 100);
 
     if (std::abs(res_x) > delta_x) {
         // Нужен корректирующий поворот
-        _yaw_is_rate = true;
-        std::abs(res_x) > (delta_x * 3) ? _yaw_or_rate = 6.0f : _yaw_or_rate = 2.0f;
+        //_yaw_is_rate = true;
+        //std::abs(res_x) > (delta_x * 3) ? _yaw_or_rate = 6.0f : _yaw_or_rate = 2.0f;
+        _yaw_is_rate = false;
         if (res_x < 0) {
             // Объект слева, поворот влево
-            makeRequest(drone::DroneMethods::RotateLeft);
+            //makeRequest(drone::DroneMethods::RotateLeft, true);
+            _speed = 0.5f;
+            makeRequest(drone::DroneMethods::ToRight, true);
             qDebug() << "<=== Влево, delta:" << std::abs(res_x);
         } else if (res_x > 0) {
+            _speed = 0.5f;
             // Объект справа, поворот вправо
-            makeRequest(drone::DroneMethods::RotateRight);
+            //makeRequest(drone::DroneMethods::RotateRight, true);
+            makeRequest(drone::DroneMethods::ToLeft, true);
             qDebug() << "===> Вправо, delta:" << std::abs(res_x);
         }
     } else if (std::abs(res_y) > delta_y) {
         // Нужен корректирующий спуск/подъём
         if (res_y > 0) {
             // Объект сверху, подъём
-            makeRequest(drone::DroneMethods::ToUp);
+            _speed = 1.0f;
+            makeRequest(drone::DroneMethods::ToUp, true);
             qDebug() << "/ \\";
             qDebug() << " |";
             qDebug() << " | Вверх";
         } else if (res_y < 0) {
             // Объект снизу, спуск
-            makeRequest(drone::DroneMethods::ToDown);
+            _speed = 1.0f;
+            makeRequest(drone::DroneMethods::ToDown, true);
             qDebug() << " |";
             qDebug() << " |";
             qDebug() << "\\ / Вниз";
+        } else {
+            _speed = 0.5f;
+            makeRequest(drone::DroneMethods::ToForward, true);
+        }
+    } else {
+        for (int i = 0; i < 1; ++i) {
+            _speed = 2.0f;
+            makeRequest(drone::DroneMethods::ToForward, true);
+            qDebug() << " Вперёд ";
         }
     }
 }

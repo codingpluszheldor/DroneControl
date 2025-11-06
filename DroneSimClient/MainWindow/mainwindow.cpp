@@ -15,10 +15,10 @@ MainWindow::MainWindow(QWidget *parent)
     twMagnetometer->resizeColumnsToContents();
 
     // Параметры по умолчанию
-    sbSpeed->setValue(5.0);
+    sbSpeed->setValue(2.0); // Скорость м/c
     rbYaw->setChecked(false);
     sbYaw->setValue(0.0);
-    cBoxDrivetrainType->setCurrentIndex(1);
+    cBoxDrivetrainType->setCurrentIndex(0); // 0 - MaxDeegreeOfFreedom, 1 - ForwardOnly
 
     setFocusPolicy(Qt::StrongFocus);
 
@@ -232,9 +232,9 @@ void MainWindow::slotGpsSensorData(const GpsSensorDataRep &data)
         }
     }
 
-    twGps->item(0, 1)->setText(QString::number(data.latitude, 'f', 2));
-    twGps->item(1, 1)->setText(QString::number(data.longitude, 'f', 2));
-    twGps->item(2, 1)->setText(QString::number(data.altitude, 'f', 2));
+    twGps->item(0, 1)->setText(QString::number(data.latitude, 'f', 8));
+    twGps->item(1, 1)->setText(QString::number(data.longitude, 'f', 8));
+    twGps->item(2, 1)->setText(QString::number(data.altitude, 'f', 8));
     twGps->item(3, 1)->setText(QString::number(data.velocity_x, 'f', 2));
     twGps->item(4, 1)->setText(QString::number(data.velocity_y, 'f', 2));
     twGps->item(5, 1)->setText(QString::number(data.velocity_z, 'f', 2));

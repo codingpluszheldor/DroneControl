@@ -7,6 +7,21 @@ STRICT_MODE_OFF
 #define RPCLIB_MSGPACK clmdep_msgpack
 #endif // !RPCLIB_MSGPACK
 #include "rpc/rpc_error.h"
+
+// Отключаем специфичные предупреждения перед включением OpenCV
+//#pragma warning(push)
+//#pragma warning(disable : 4127) // C4127: conditional expression is constant
+//#pragma warning(disable : 4996) // C4996: deprecated functions
+//#pragma warning(disable : 4266) // C4266: no override available for virtual member function
+//#pragma warning(disable : 4263) // C4263: member function does not override any base class virtual member function
+//#pragma warning(disable : 4267) // C4267: conversion from size_t to int, possible loss of data
+//#pragma warning(disable : 4100) // C4100: unreferenced formal parameter
+//#include <opencv2/core.hpp>
+//#include <opencv2/imgcodecs.hpp>
+//#include <opencv2/imgproc.hpp>
+//#include <opencv2/calib3d.hpp>
+//#pragma warning(pop)
+
 STRICT_MODE_ON
 
 #include "vehicles/multirotor/api/MultirotorRpcLibClient.hpp"
@@ -67,7 +82,71 @@ private:
     std::string _camera_name_val = "front-center";
     ImageCaptureBase::ImageType _camera_img_type = ImageType::Scene;
 
+    // Параметры стерео камеры
+    //cv::Mat _camera_matrix_left;
+    //cv::Mat _camera_matrix_right;
+    //cv::Mat _dist_coeffs_left;
+    //cv::Mat _dist_coeffs_right;
+    //cv::Mat _R;
+    //cv::Mat _T;
+
+    //// Карты для ректификации
+    //cv::Mat _left_map1, _left_map2, _right_map1, _right_map2;
+    //bool _stereo_initialized = false;
+
 public:
+    DroneApplication()
+    {
+        // Инициализация параметров стерео камеры
+        //initializeStereoParameters();
+    }
+
+    ///// <summary>
+    ///// Инициализация параметров стерео камеры
+    ///// </summary>
+    //void initializeStereoParameters()
+    //{
+    //    // Примерные параметры камеры
+    //    _camera_matrix_left = (cv::Mat_<double>(3, 3) << 1000.0, 0.0, 320.0, 0.0, 1000.0, 240.0, 0.0, 0.0, 1.0);
+
+    //    _camera_matrix_right = (cv::Mat_<double>(3, 3) << 1000.0, 0.0, 320.0, 0.0, 1000.0, 240.0, 0.0, 0.0, 1.0);
+
+    //    _dist_coeffs_left = cv::Mat::zeros(1, 5, CV_64F);
+    //    _dist_coeffs_right = cv::Mat::zeros(1, 5, CV_64F);
+
+    //    _R = cv::Mat::eye(3, 3, CV_64F);
+    //    _T = (cv::Mat_<double>(3, 1) << -0.1, 0.0, 0.0);
+    //}
+
+    ///// <summary>
+    ///// Инициализация стерео ректификации
+    ///// </summary>
+    //bool initializeStereoRectification(const cv::Size& image_size)
+    //{
+    //    try {
+    //        cv::Mat R1, R2, P1, P2, Q;
+    //        cv::stereoRectify(_camera_matrix_left, _dist_coeffs_left, _camera_matrix_right, _dist_coeffs_right, image_size, _R, _T, R1, R2, P1, P2, Q, cv::CALIB_ZERO_DISPARITY, 0, image_size);
+
+    //        cv::initUndistortRectifyMap(_camera_matrix_left, _dist_coeffs_left, R1, P1, image_size, CV_16SC2, _left_map1, _left_map2);
+    //        cv::initUndistortRectifyMap(_camera_matrix_right, _dist_coeffs_right, R2, P2, image_size, CV_16SC2, _right_map1, _right_map2);
+
+    //        _stereo_initialized = true;
+    //        return true;
+    //    }
+    //    catch (const cv::Exception& e) {
+    //        std::cerr << "Ошибка инициализации стерео ректификации: " << e.what() << "\n";
+    //        return false;
+    //    }
+    //}
+
+    ///// <summary>
+    ///// Безопасное преобразование size_t в int для OpenCV
+    ///// </summary>
+    //int safeSizeToInt(size_t size_val)
+    //{
+    //    return static_cast<int>(size_val);
+    //}
+
     /// <summary>
     /// Инициализация сервера rpc на nanomsg
     /// </summary>
@@ -226,9 +305,26 @@ public:
                             }
                         }
                         //std::this_thread::sleep_for(std::chrono::duration<double>(delay));
-                        std::this_thread::sleep_for(15ms);
+                        // std::this_thread::sleep_for(15ms);
                     }
                     else {
+                        //const std::vector<ImageResponse> img_response_left = _client.cameraImage(map_cameras[DroneCamera::front_left], _camera_img_type);
+                        //const std::vector<ImageResponse> img_response_right = _client.cameraImage(map_cameras[DroneCamera::front_right], _camera_img_type);
+
+                        //// вычисления Depth Planar
+                        //std::vector<std::byte> depth_data = computeDepthPlanar(img_response_left, img_response_right);
+                        //if (!depth_data.empty()) {
+                        //    // Отправляем depth изображение
+                        //    int send_result = nn_send(_client_sock,
+                        //                              reinterpret_cast<const char*>(depth_data.data()),
+                        //                              depth_data.size(),
+                        //                              0);
+                        //    if (send_result < 0) {
+                        //        std::cerr << "Ошибка отправки depth изображения\n";
+                        //    }
+                        //    
+                        //}
+
                         const std::vector<ImageResponse> img_response_left = _client.cameraImage(map_cameras[DroneCamera::front_left], _camera_img_type);
                         for (const ImageResponse& image_info : img_response_left) {
                             std::string path = "D:\\Documents\\AirSim\\StereoRecordings\\Left";
@@ -267,6 +363,107 @@ public:
             }
         }
     }
+
+    ///// <summary>
+    ///// Функция для вычисления Depth Planar из стерео изображений
+    ///// </summary>
+    ///// <param name="img_response_left">Левый кадр стерео пары</param>
+    ///// <param name="img_response_right">Правый кадр стерео пары</param>
+    ///// <returns>Вектор байтов с данными depth изображения</returns>
+    //std::vector<std::byte> computeDepthPlanar(const std::vector<ImageResponse>& img_response_left,
+    //                                          const std::vector<ImageResponse>& img_response_right)
+    //{
+    //    if (img_response_left.empty() || img_response_right.empty()) {
+    //        std::cerr << "Пустые данные стерео изображений\n";
+    //        return {};
+    //    }
+
+    //    try {
+    //        // Декодируем изображения из буфера в cv::Mat
+    //        const auto& left_data = img_response_left[0].image_data_uint8;
+    //        const auto& right_data = img_response_right[0].image_data_uint8;
+
+    //        // Безопасное преобразование size_t в int
+    //        int left_size = safeSizeToInt(left_data.size());
+    //        int right_size = safeSizeToInt(right_data.size());
+
+    //        cv::Mat left_img = cv::imdecode(
+    //            cv::Mat(1, left_size, CV_8UC1, const_cast<uint8_t*>(left_data.data())),
+    //            cv::IMREAD_GRAYSCALE);
+
+    //        cv::Mat right_img = cv::imdecode(
+    //            cv::Mat(1, right_size, CV_8UC1, const_cast<uint8_t*>(right_data.data())),
+    //            cv::IMREAD_GRAYSCALE);
+
+    //        if (left_img.empty() || right_img.empty()) {
+    //            std::cerr << "Не удалось декодировать стерео изображения\n";
+    //            return {};
+    //        }
+
+    //        // Инициализируем ректификацию при первом вызове
+    //        if (!_stereo_initialized) {
+    //            if (!initializeStereoRectification(left_img.size())) {
+    //                return {};
+    //            }
+    //        }
+
+    //        // Ректификация стерео изображений
+    //        cv::Mat left_rectified, right_rectified;
+    //        cv::remap(left_img, left_rectified, _left_map1, _left_map2, cv::INTER_LINEAR);
+    //        cv::remap(right_img, right_rectified, _right_map1, _right_map2, cv::INTER_LINEAR);
+
+    //        // Вычисление карты диспаратности
+    //        auto stereo = cv::StereoBM::create();
+    //        stereo->setNumDisparities(80);
+    //        stereo->setBlockSize(15);
+
+    //        cv::Mat disparity;
+    //        stereo->compute(left_rectified, right_rectified, disparity);
+
+    //        // Конвертируем disparity в depth
+    //        cv::Mat depth_planar;
+    //        disparity.convertTo(disparity, CV_32F, 1.0 / 16.0);
+
+    //        // Вычисляем глубину
+    //        double baseline = cv::norm(_T);
+    //        double focal_length = _camera_matrix_left.at<double>(0, 0);
+
+    //        cv::Mat depth_map = (focal_length * baseline) / (disparity + 1e-6);
+
+    //        // Нормализуем depth map
+    //        double min_val, max_val;
+    //        cv::minMaxLoc(depth_map, &min_val, &max_val);
+
+    //        if (max_val > min_val) {
+    //            depth_map.convertTo(depth_planar, CV_8UC1, 255.0 / (max_val - min_val), -min_val * 255.0 / (max_val - min_val));
+    //        }
+    //        else {
+    //            depth_planar = cv::Mat::zeros(depth_map.size(), CV_8UC1);
+    //        }
+
+    //        // Кодируем depth изображение в PNG
+    //        std::vector<uchar> encoded_depth;
+    //        if (!cv::imencode(".png", depth_planar, encoded_depth)) {
+    //            std::cerr << "Ошибка кодирования depth изображения\n";
+    //            return {};
+    //        }
+
+    //        // Конвертируем в std::vector<std::byte>
+    //        std::vector<std::byte> depth_data(encoded_depth.size());
+    //        memcpy(depth_data.data(), encoded_depth.data(), encoded_depth.size());
+
+    //        std::cout << "Depth Planar вычислен, размер: " << depth_data.size() << " байт\n";
+    //        return depth_data;
+    //    }
+    //    catch (const cv::Exception& e) {
+    //        std::cerr << "OpenCV ошибка при вычислении depth: " << e.what() << "\n";
+    //        return {};
+    //    }
+    //    catch (const std::exception& e) {
+    //        std::cerr << "Ошибка при вычислении depth: " << e.what() << "\n";
+    //        return {};
+    //    }
+    //}
 
     /// <summary>
     /// Запуск цикла сообщений
